@@ -2,27 +2,47 @@ package Code;
 
 public class Edge {
 	
-	private int source;
-	private int target;
+	private String source;
+	private String target;
+	private String length;
+	private String name;
 	
-	public Edge(int source, int target) {
+	public Edge(String source, String target, String length, String name) {
 		this.source = source;
 		this.target = target;
+		this.length = length;
+		this.name = name;
 	}
 
-	public int getTarget() {
+	public String getTarget() {
 		return target;
 	}
 
-	public void setTarget(int target) {
+	public void setTarget(String target) {
 		this.target = target;
 	}
 
-	public int getSource() {
+	public String getSource() {
 		return source;
 	}
 
-	public void setSource(int source) {
+	public void setSource(String source) {
 		this.source = source;
+	}
+
+	public String getLength() {
+		return length;
+	}
+
+	public void setLength(String length) {
+		this.length = length;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }
