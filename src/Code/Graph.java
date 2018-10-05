@@ -14,8 +14,14 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 public class Graph {
+	
+	
+	ArrayList<Node> NodeList = new ArrayList<Node>();
+	
+	
 	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
 		ReadXML("Anchuras.graphml");
+	
 	}
 	
 	//info para ReadXML: http://www.mkyong.com/java/how-to-read-xml-file-in-java-dom-parser/
@@ -31,7 +37,10 @@ public class Graph {
 		
 		System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
 		
+     	//Nodos
+		
 		NodeList nList = doc.getElementsByTagName("node");
+		Node node;
 		
 		String d4, d5, d6, d7, d8, d9, d10, d11;
 		String source, target;
@@ -53,8 +62,14 @@ public class Graph {
 				System.out.println("d4: " + d4);
 				System.out.println("d5: " + d5);
 				System.out.println("d6: " + d6);
+				
+				node = new Node(d4, d5, d6);
+			
+				
 			}
 		}
+		
+		//Edges
 		
 	    nList = doc.getElementsByTagName("edge");
 		
@@ -69,7 +84,7 @@ public class Graph {
 			System.out.println("Source: " + source + " - Target: " + target);
 			
 			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-				//Aqui para leer data	
+				//A	qui para leer data	
 			}
 		}
 	}
