@@ -15,34 +15,29 @@ import org.xml.sax.SAXException;
 
 public class Graph {
 	
+	private String XMLFile;
+	private ArrayList<Nodo> NodeList = new ArrayList<Nodo>();
+	private ArrayList<Edge> EdgeList = new ArrayList<Edge>();
 	
-	static ArrayList<Nodo> NodeList = new ArrayList<Nodo>();
-	static ArrayList<Edge> EdgeList = new ArrayList<Edge>();
+	public ArrayList<Edge> getEdgeList(){ return EdgeList;}
+	public ArrayList<Nodo> getNodeList(){ return NodeList;}
 	
-	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
-		ReadXML("Anchuras.graphml");
-	
-		
-		System.out.println("Edge list: " + EdgeList.size() + 
-						   "Node list: " + NodeList.size());	
-		
-		System.out.println("El nodo (\"4331489709\") pertenece = " + BelongNode("4331489709"));
-		positionNode("4331489709");
-		adjacentNode("4331489709");
+	public Graph(String XMLFile) {
+		this.XMLFile = XMLFile;
 	}
 	
 	//info para ReadXML: http://www.mkyong.com/java/how-to-read-xml-file-in-java-dom-parser/
 	//Link para ver los archivos xml que tenemos que leer: https://drive.google.com/drive/folders/1nXPVVJ0E44osD807PZLPlV3-kSvEcpEj
 	
-	public static void ReadXML(String f) throws ParserConfigurationException, SAXException, IOException {
-		File XMLFile = new File(f);
+	public void ReadXML() throws ParserConfigurationException, SAXException, IOException {
+		File f = new File(XMLFile);
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-		Document doc = dBuilder.parse(XMLFile);
+		Document doc = dBuilder.parse(f);
 		
 		doc.getDocumentElement().normalize();
 		
-		System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
+		System.out.println("Root element :" + doc.getDocumentElement().getNodeName() + "\n");
 		
      	//Nodos
 		
@@ -51,9 +46,8 @@ public class Graph {
 		
 		String nodeID;
 		String d4, d5, d6, d7, d8, d9, d10, d11;
-		String source, target, length, name;
-		
-		System.out.println("--------------------------");
+		String source, target, length = "", name = "";
+		int nData = 0;
 		
 		for (int temp = 0; temp<nList.getLength(); temp++) {
 			Node nNode = nList.item(temp);
@@ -66,9 +60,6 @@ public class Graph {
 				d5 = eElement.getElementsByTagName("data").item(1).getTextContent();	//X AXIS
 				d6 = eElement.getElementsByTagName("data").item(2).getTextContent();	
 			
-				
-				
-				
 				node = new Nodo(nodeID, d4, d5, d6);
 				NodeList.add(node);
 				
@@ -78,48 +69,52 @@ public class Graph {
 		//Edges
 		
 	    nList = doc.getElementsByTagName("edge");
+	    NodeList dList;
 		Edge edge;
 	    
 	    
 		for (int temp = 0; temp<nList.getLength(); temp++) {
+			
 			Node nNode = nList.item(temp);
 			Element eElement = (Element) nNode;
 			
 			source = eElement.getAttribute("source");
 			target = eElement.getAttribute("target");
-			length = eElement.getAttribute("length");
-			name = eElement.getAttribute("name");
+
+			dList = eElement.getElementsByTagName("data");
 			
+			for (int aux = 0; aux<dList.getLength(); aux++) {
+				Node dNode = dList.item(aux);
+				Element dElement = (Element) dNode;
+				if(dElement.getAttribute("key").equals("d13")) name = dElement.getTextContent();
+				if(dElement.getAttribute("key").equals("d11")) length = dElement.getTextContent();
+			}
 			edge = new Edge(source, target, length, name);
 			EdgeList.add(edge);
 		}
 	}
 
 
-	public static boolean BelongNode(String id){
-		
-		boolean belongs = false;
-		
+	public boolean BelongNode(String id){		
 		for(int i = 0; i < NodeList.size(); i++){
 			if(id.equals(NodeList.get(i).getId())){
-				belongs = true;
+				System.out.println("#BelongNode#\n\nThe node " + id + " belongs to the graph\n");
+				return true;
 			}
-		}
-		
-		return belongs;
+		}	
+		return false;
 	}
 	
-	public static void positionNode (String id){
-		
+	public void positionNode (String id){		
 		for(int i = 0; i < NodeList.size(); i++){
 			if(id.equals(NodeList.get(i).getId())){
-				System.out.println("X axis = " + NodeList.get(i).getD5() + 
-						   "\nY axis = " + NodeList.get(i).getD4());
+				System.out.println("#positionNode#\n\nPosition of node " + id +"\nX axis = " + NodeList.get(i).getD5() + 
+						   "\nY axis = " + NodeList.get(i).getD4() + "\n");
 			}
 		}
 	}
 
-	public static void adjacentNode(String id){
+	public void adjacentNode(String id){
 		
 		Nodo initial = null;
 		ArrayList<Edge> adjacentEdges = new ArrayList<Edge>();
@@ -145,7 +140,7 @@ public class Graph {
 			
 		}
 		
-		System.out.println("The adjacent edges with the node " + initial.getId() + " are: \n" + aux);
+		System.out.println("The adjacent edges for the node " + initial.getId() + " are: \n\n" + aux );
 		
 	}
 	
