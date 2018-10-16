@@ -19,6 +19,9 @@ public class Graph {
 	private ArrayList<Nodo> NodeList = new ArrayList<Nodo>();
 	private ArrayList<Edge> EdgeList = new ArrayList<Edge>();
 	
+	private String NAME_KEY = "";
+	private String LEN_KEY = "";
+	
 	public ArrayList<Edge> getEdgeList(){ return EdgeList;}
 	public ArrayList<Nodo> getNodeList(){ return NodeList;}
 	
@@ -45,9 +48,8 @@ public class Graph {
 		Nodo node;
 		
 		String nodeID;
-		String d4, d5, d6, d7, d8, d9, d10, d11;
+		String d4, d5, d6;
 		String source, target, length = "", name = "";
-		int nData = 0;
 		
 		for (int temp = 0; temp<nList.getLength(); temp++) {
 			Node nNode = nList.item(temp);
@@ -71,7 +73,21 @@ public class Graph {
 	    nList = doc.getElementsByTagName("edge");
 	    NodeList dList;
 		Edge edge;
+		
+		NodeList kList;
+		kList = doc.getElementsByTagName("key");
+		
+		for (int k = 0; k<kList.getLength(); k++) {
+			Node kNode = kList.item(k);
+			Element kElement = (Element) kNode;
+			
+			if(kElement.getAttribute("attr.name").equals("name") && kElement.getAttribute("for").equals("edge")) NAME_KEY = kElement.getAttribute("id");
+			else if(kElement.getAttribute("attr.name").equals("length") && kElement.getAttribute("for").equals("edge")) LEN_KEY = kElement.getAttribute("id");
+			
+		}
 	    
+		System.out.println(NAME_KEY);
+		System.out.println(LEN_KEY);
 	    
 		for (int temp = 0; temp<nList.getLength(); temp++) {
 			
@@ -86,8 +102,8 @@ public class Graph {
 			for (int aux = 0; aux<dList.getLength(); aux++) {
 				Node dNode = dList.item(aux);
 				Element dElement = (Element) dNode;
-				if(dElement.getAttribute("key").equals("d13")) name = dElement.getTextContent();
-				if(dElement.getAttribute("key").equals("d11")) length = dElement.getTextContent();
+				if(dElement.getAttribute("key").equals(NAME_KEY)) name = dElement.getTextContent();
+				if(dElement.getAttribute("key").equals(LEN_KEY)) length = dElement.getTextContent();
 			}
 			edge = new Edge(source, target, length, name);
 			EdgeList.add(edge);
@@ -95,21 +111,29 @@ public class Graph {
 	}
 
 
-	public boolean BelongNode(String id){		
+	public boolean BelongNode(String id){
+		long startTime = System.currentTimeMillis();
 		for(int i = 0; i < NodeList.size(); i++){
 			if(id.equals(NodeList.get(i).getId())){
 				System.out.println("#BelongNode#\n\nThe node " + id + " belongs to the graph\n");
+				long stopTime = System.currentTimeMillis();
+				long elapsedTime = stopTime - startTime;
+				System.out.println("elapsed: " + elapsedTime + "\n");
 				return true;
 			}
 		}	
 		return false;
 	}
 	
-	public void positionNode (String id){		
+	public void positionNode (String id){
+		long startTime = System.currentTimeMillis();
 		for(int i = 0; i < NodeList.size(); i++){
 			if(id.equals(NodeList.get(i).getId())){
 				System.out.println("#positionNode#\n\nPosition of node " + id +"\nX axis = " + NodeList.get(i).getD5() + 
 						   "\nY axis = " + NodeList.get(i).getD4() + "\n");
+				long stopTime = System.currentTimeMillis();
+				long elapsedTime = stopTime - startTime;
+				System.out.println("elapsed: " + elapsedTime + "\n");
 			}
 		}
 	}
