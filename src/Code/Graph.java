@@ -110,7 +110,6 @@ public class Graph {
 		}
 	}
 
-
 	public boolean BelongNode(String id){
 		long startTime = System.currentTimeMillis();
 		for(int i = 0; i < NodeList.size(); i++){

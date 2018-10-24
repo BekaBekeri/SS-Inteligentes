@@ -19,21 +19,26 @@ public class Main {
 		
 		LinkedList<TreeNode> lList;
 		SortedSet<TreeNode> sSet;
-		PriorityQueue<TreeNode> pQueue;
+		PriorityQueue<TreeNode> pQueue = null;
 		
-		Integer[] LinkedTest = {100, 1000, 5000, 7500};
+		Integer[] LinkedTest = {100, 1000, 10000, 100000, 200000, 500000, 1000000, 2000000, 5000000, 10000000};
 		Integer[] SortedTest = {100, 1000, 10000, 100000, 200000, 500000, 1000000, 2000000, 5000000, 10000000, 20000000, 50000000};
 		Integer[] PriorityTest = {100, 1000, 10000, 100000, 200000, 500000, 1000000, 2000000, 5000000, 10000000, 20000000, 50000000};
 		
 		//Collection con comparable
 		for(int i = 0; i<LinkedTest.length; i++) {
+			t_ini = System.currentTimeMillis();
 			lList = new LinkedList<TreeNode>();
 			for(int j = 0; j<LinkedTest[i] ; j++) {
 				tn = new TreeNode();
 				lList.add(tn);
 			}
+			t_fin = System.currentTimeMillis();
+			System.out.println("Time LinkedList " + LinkedTest[i] + " nodes: " + (t_fin-t_ini) + " ms");
 		}
 		
+		System.out.println();
+
 		for(int i = 0; i<SortedTest.length; i++) {
 			t_ini = System.currentTimeMillis();
 			sSet = new TreeSet<TreeNode>();
@@ -56,6 +61,10 @@ public class Main {
 			}
 			t_fin = System.currentTimeMillis();
 			System.out.println("Time PriorityQueue " + PriorityTest[i] + " nodes: " + (t_fin-t_ini) + " ms");
+		}
+		
+		for(int i = 0; i < 100; i++){
+			System.out.println("PriorityQ Node Nº: " + (i+1) + " with f: " + pQueue.poll().f);	
 		}
 	}
 }
