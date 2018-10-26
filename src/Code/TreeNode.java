@@ -3,7 +3,6 @@ package Code;
 public class TreeNode implements Comparable<TreeNode> {
 	TreeNode parent;
 	State currentState;
-	//Action
 	int depth;
 	float f;
 	

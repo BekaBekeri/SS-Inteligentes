@@ -14,6 +14,16 @@ import org.xml.sax.SAXException;
 public class Main {
 
 	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
+		
+		Testing();
+		
+		Graph graph = new Graph("Almadén.graphml");
+		
+		
+		
+	}
+	
+	public static void Testing(){
 		TreeNode tn;
 		long t_ini, t_fin;
 		
@@ -66,5 +76,12 @@ public class Main {
 		for(int i = 0; i < 100; i++){
 			System.out.println("PriorityQ Node Nº: " + (i+1) + " with f: " + pQueue.poll().f);	
 		}
+	}
+	
+	
+	public static void Successors(State state){
+		
+	
+		
 	}
 }

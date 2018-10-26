@@ -3,40 +3,40 @@ package Code;
 public class Nodo {
 	
 	private String id;
-	private String d4;		// D4 = Y axis
-	private String d5;		// D5 = X axis
-	private String d6;
+	private String yAxis;		// D4 = Y axis
+	private String xAxis;		// D5 = X axis
+	private String osmid;
 	
 	public Nodo(String id, String d4, String d5, String d6) {
 		super();
 		this.id = id;
-		this.d4 = d4;
-		this.d5 = d5;
-		this.d6 = d6;
+		this.yAxis = d4;
+		this.xAxis = d5;
+		this.osmid = d6;
 	}
 
-	public String getD4() {
-		return d4;
+	public String getYAxis() {
+		return yAxis;
 	}
 
-	public void setD4(String d4) {
-		this.d4 = d4;
+	public void setYAxis(String d4) {
+		this.yAxis = d4;
 	}
 
-	public String getD5() {
-		return d5;
+	public String getXAxis() {
+		return xAxis;
 	}
 
-	public void setD5(String d5) {
-		this.d5 = d5;
+	public void setXAxis(String d5) {
+		this.xAxis = d5;
 	}
 
-	public String getD6() {
-		return d6;
+	public String getOsmid() {
+		return osmid;
 	}
 
-	public void setD6(String d6) {
-		this.d6 = d6;
+	public void setOsmid(String d6) {
+		this.osmid = d6;
 	}
 
 	public String getId() {

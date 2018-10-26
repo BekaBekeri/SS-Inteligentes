@@ -25,8 +25,9 @@ public class Graph {
 	public ArrayList<Edge> getEdgeList(){ return EdgeList;}
 	public ArrayList<Nodo> getNodeList(){ return NodeList;}
 	
-	public Graph(String XMLFile) {
+	public Graph(String XMLFile) throws ParserConfigurationException, SAXException, IOException {
 		this.XMLFile = XMLFile;
+		ReadXML();
 	}
 	
 	//info para ReadXML: http://www.mkyong.com/java/how-to-read-xml-file-in-java-dom-parser/
