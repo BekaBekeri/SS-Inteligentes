@@ -15,10 +15,10 @@ public class Main {
 
 	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
 		
+
 		Presentation prueba = new Presentation();
-		
 		//Testing();
-		prueba.getInitialNode();
+		prueba.readJson();
 		Graph graph = new Graph("Almadén.graphml");
 		
 		
@@ -34,8 +34,8 @@ public class Main {
 		PriorityQueue<TreeNode> pQueue = null;
 		
 		Integer[] LinkedTest = {100, 1000, 10000, 100000, 200000, 500000, 1000000, 2000000, 5000000, 10000000};
-		Integer[] SortedTest = {100, 1000, 10000, 100000, 200000, 500000, 1000000, 2000000, 5000000, 10000000, 20000000, 50000000};
-		Integer[] PriorityTest = {100, 1000, 10000, 100000, 200000, 500000, 1000000, 2000000, 5000000, 10000000, 20000000, 50000000};
+		Integer[] SortedTest = {100, 1000, 10000, 100000, 200000, 500000, 1000000, 2000000, 5000000, 10000000};
+		Integer[] PriorityTest = {100, 1000, 10000, 100000, 200000, 500000, 1000000, 2000000, 5000000, 10000000};
 		
 		//Collection con comparable
 		for(int i = 0; i<LinkedTest.length; i++) {
@@ -54,7 +54,7 @@ public class Main {
 		for(int i = 0; i<SortedTest.length; i++) {
 			t_ini = System.currentTimeMillis();
 			sSet = new TreeSet<TreeNode>();
-			for(int j = 0; j<PriorityTest[i]; j++) {
+			for(int j = 0; j<SortedTest[i]; j++) {
 				tn = new TreeNode();
 				sSet.add(tn);
 			}

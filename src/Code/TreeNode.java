@@ -13,7 +13,7 @@ public class TreeNode implements Comparable<TreeNode> {
 	public float getF() {return f;}
 	
 	public int compareTo(TreeNode tn) {
-		return (int) (this.f - tn.getF());
+		return  (int) (this.f - tn.getF());
 	}
 	
 }
