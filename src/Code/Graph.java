@@ -129,8 +129,8 @@ public class Graph {
 		long startTime = System.currentTimeMillis();
 		for(int i = 0; i < NodeList.size(); i++){
 			if(id.equals(NodeList.get(i).getId())){
-				System.out.println("#positionNode#\n\nPosition of node " + id +"\nX axis = " + NodeList.get(i).getD5() + 
-						   "\nY axis = " + NodeList.get(i).getD4() + "\n");
+				System.out.println("#positionNode#\n\nPosition of node " + id +"\nX axis = " + NodeList.get(i).getXAxis() + 
+						   "\nY axis = " + NodeList.get(i).getYAxis() + "\n");
 				long stopTime = System.currentTimeMillis();
 				long elapsedTime = stopTime - startTime;
 				System.out.println("elapsed: " + elapsedTime + "\n");

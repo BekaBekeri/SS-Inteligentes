@@ -15,8 +15,10 @@ public class Main {
 
 	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
 		
-		Testing();
+		Presentation prueba = new Presentation();
 		
+		//Testing();
+		prueba.getInitialNode();
 		Graph graph = new Graph("Almadén.graphml");
 		
 		
