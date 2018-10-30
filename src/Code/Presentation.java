@@ -1,5 +1,6 @@
 package Code;
 
+import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -19,12 +20,12 @@ public class Presentation {					//JSON READER
 	
 	static Scanner sc = new Scanner(System.in);
 	
-	public static void main() throws UnsupportedEncodingException, IOException{
+	public static void main(String[] args) throws UnsupportedEncodingException, IOException{
 		
-		
+		Problem problem;
 		boolean prunning = false;
 		
-		readJson();
+		problem = readJson();
 		prunning = askPrunning();
 		
 	}
@@ -44,16 +45,22 @@ public class Presentation {					//JSON READER
 	return false;
 }
 
-	public static Nodo readJson() throws UnsupportedEncodingException, IOException {
-		Nodo nodo;
-		
-		try(Reader reader = new InputStreamReader(Presentation.class.getResourceAsStream("jsonPrueba.json"), "UTF-8")){
-			Gson gson =  new GsonBuilder().create();
-			nodo = gson.fromJson(reader, Nodo.class);
-			System.out.println("nodo" + nodo.toString());
+	public static Problem readJson() throws UnsupportedEncodingException, IOException {
+		Problem init = null;
+		Gson gson =  new Gson();
+			
+		try{
+			BufferedReader br = new BufferedReader(new FileReader("jsonPrueba.json"));
+			init = gson.fromJson(br, Problem.class);
+			System.out.println(init.toString()
+					);
+		}catch(IOException e){
+			e.printStackTrace();
 		}
+			
+		
 
-		return nodo;
+		return init;
 
 	}
 }

@@ -60,4 +60,16 @@ public class State {
 	public String getMd5(){
 		return md5;
 	}
+	
+	public String toString(){
+		PriorityQueue<Nodo> nodeListAux = this.nodeList;
+		String aux = nodo.toString();
+		for(int i = 0; i < nodeListAux.size(); i++){
+			aux += nodeListAux.poll().toString();
+		}
+		aux+= "\nMD5CheckSum = " + this.md5;
+		
+		return aux;
+	}
+	
 }

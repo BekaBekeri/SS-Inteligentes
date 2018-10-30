@@ -47,6 +47,9 @@ public class Nodo {
 		this.id = id;
 	}
 	
-	
-	
+	public String toString(){
+		String aux = "";
+		aux = "ID: " + this.id + ", [" + this.xAxis + ", " + this.yAxis + "], " + this.osmid;
+		return aux;
+	}
 }

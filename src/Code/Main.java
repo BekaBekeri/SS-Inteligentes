@@ -13,7 +13,7 @@ import org.xml.sax.SAXException;
 
 public class Main {
 
-	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
+	public static void ejecucionPrincipal() throws ParserConfigurationException, SAXException, IOException {
 		
 
 		Presentation prueba = new Presentation();
