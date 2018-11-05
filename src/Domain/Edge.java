@@ -1,4 +1,4 @@
-package Code;
+package Domain;
 
 public class Edge {
 	

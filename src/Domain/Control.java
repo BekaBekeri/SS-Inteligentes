@@ -1,4 +1,4 @@
-package Code;
+package Domain;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,19 +11,39 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
-public class Main {
+import Presentation.Presentation;
 
-	public static void ejecucionPrincipal() throws ParserConfigurationException, SAXException, IOException {
-		
+public class Control {
 
-		Presentation prueba = new Presentation();
-		//Testing();
-		prueba.readJson();
-		Graph graph = new Graph("Almadén.graphml");
+	public static void ejecucionPrincipal(Problem problema, boolean prunning, String strategy, int depth) {
 		
+		System.out.println("EMPEZANDO LA EJECUCION PRINCIPAL DEL PROGRAMA");
+		
+		
+		
+		System.out.println(problema.toString());
 		
 		
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	public static void Testing(){
 		TreeNode tn;
@@ -42,8 +62,8 @@ public class Main {
 			t_ini = System.currentTimeMillis();
 			lList = new LinkedList<TreeNode>();
 			for(int j = 0; j<LinkedTest[i] ; j++) {
-				tn = new TreeNode();
-				lList.add(tn);
+				//tn = new TreeNode();
+				//lList.add(tn);
 			}
 			t_fin = System.currentTimeMillis();
 			System.out.println("Time LinkedList " + LinkedTest[i] + " nodes: " + (t_fin-t_ini) + " ms");
@@ -55,8 +75,8 @@ public class Main {
 			t_ini = System.currentTimeMillis();
 			sSet = new TreeSet<TreeNode>();
 			for(int j = 0; j<SortedTest[i]; j++) {
-				tn = new TreeNode();
-				sSet.add(tn);
+				//tn = new TreeNode();
+				//sSet.add(tn);
 			}
 			t_fin = System.currentTimeMillis();
 			System.out.println("Time SortedSet " + PriorityTest[i] + " nodes: " + (t_fin-t_ini) + " ms");
@@ -68,8 +88,8 @@ public class Main {
 			t_ini = System.currentTimeMillis();
 			pQueue = new PriorityQueue<TreeNode>();
 			for(int j = 0; j<PriorityTest[i]; j++) {
-				tn = new TreeNode();
-				pQueue.add(tn);
+				//tn = new TreeNode();
+				//pQueue.add(tn);
 			}
 			t_fin = System.currentTimeMillis();
 			System.out.println("Time PriorityQueue " + PriorityTest[i] + " nodes: " + (t_fin-t_ini) + " ms");
@@ -80,10 +100,4 @@ public class Main {
 		}
 	}
 	
-	
-	public static void Successors(State state){
-		
-	
-		
-	}
 }

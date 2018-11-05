@@ -1,12 +1,12 @@
-package Code;
+package Domain;
 
 public class Problem {
 
 	private String graphlmfile;
-	private Nodo IntSt;
+	private StateString IntSt;
 	
 	
-	public Problem(String fileJson, Nodo nodoInicial) {
+	public Problem(String fileJson, StateString nodoInicial) {
 		this.graphlmfile = fileJson;
 		this.IntSt = nodoInicial;
 	}
@@ -16,10 +16,10 @@ public class Problem {
 	public void setGraphlmfile(String fileJson) {
 		this.graphlmfile = fileJson;
 	}
-	public Nodo getIntSt() {
+	public StateString getIntSt() {
 		return IntSt;
 	}
-	public void setIntSt(Nodo nodoInicial) {
+	public void setIntSt(StateString nodoInicial) {
 		this.IntSt = nodoInicial;
 	}
 	

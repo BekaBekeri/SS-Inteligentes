@@ -1,4 +1,4 @@
-package Code;
+package Domain;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

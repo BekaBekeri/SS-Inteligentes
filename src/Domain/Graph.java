@@ -1,4 +1,4 @@
-package Code;
+package Domain;
 
 import java.io.File;
 import java.io.IOException;
