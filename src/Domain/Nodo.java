@@ -7,6 +7,10 @@ public class Nodo {
 	private String xAxis;		// D5 = X axis
 	private String osmid;
 	
+	public Nodo(){
+		
+	}
+	
 	public Nodo(String id, String d4, String d5, String d6) {
 		super();
 		this.id = id;

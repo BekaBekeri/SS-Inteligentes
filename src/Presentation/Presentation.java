@@ -9,6 +9,10 @@ import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.SAXException;
+
 import com.google.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -23,7 +27,7 @@ public class Presentation {					//JSON READER
 	
 	static Scanner sc = new Scanner(System.in);
 	
-	public static void main(String[] args) throws UnsupportedEncodingException, IOException, InterruptedException{
+	public static void main(String[] args) throws UnsupportedEncodingException, IOException, InterruptedException, ParserConfigurationException, SAXException{
 		
 		Problem problem;
 		boolean prunning = false;
@@ -123,7 +127,7 @@ public class Presentation {					//JSON READER
 }
 
 	public static Problem readJson() throws UnsupportedEncodingException, IOException {
-		Problem init = null;
+		Problem init = new Problem();
 		Gson gson =  new Gson();
 			
 		try{

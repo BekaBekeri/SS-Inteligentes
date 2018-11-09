@@ -14,15 +14,37 @@ import org.xml.sax.SAXException;
 import Presentation.Presentation;
 
 public class Control {
+	
+	private static boolean solution;
+	private static Graph grafo;
+	private static PriorityQueue<TreeNode> visited;
+	private static PriorityQueue<TreeNode> frontier;
+	private static ArrayList<Nodo> adyacentes;
 
-	public static void ejecucionPrincipal(Problem problema, boolean prunning, String strategy, int depth) {
+	public static void ejecucionPrincipal(Problem problema, boolean prunning, String strategy, int depth) throws ParserConfigurationException, SAXException, IOException {
 		
-		System.out.println("EMPEZANDO LA EJECUCION PRINCIPAL DEL PROGRAMA");
+		grafo = new Graph(problema.getGraphlmfile());
+		solution = false;
+		visited = new PriorityQueue<TreeNode>();
+		frontier = new PriorityQueue<TreeNode>();
+		adyacentes = new ArrayList<Nodo>();
+		State estadoInicial = new State();
+		Nodo nodoInicial = new Nodo();
+		
+		nodoInicial = grafo.getNodeList().get(problema.getIntSt().getNode());	
+		adyacentes = grafo.adjacentNode(nodoInicial.getId());
+		System.out.println("Adyacentes: " + adyacentes.toString());
+		
+	}
+	
+	public static ArrayList<TreeNode> Depth_Limited_Search(Problem problem, String strategy, int MAX_deep){
+		
+		ArrayList<TreeNode> solucion = new ArrayList<TreeNode>();
+		PriorityQueue<TreeNode> fringe = new PriorityQueue<TreeNode>();
+				
 		
 		
-		
-		System.out.println(problema.toString());
-		
+		return solucion;
 		
 	}
 	

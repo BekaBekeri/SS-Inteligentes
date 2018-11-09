@@ -8,23 +8,28 @@ import javax.xml.bind.DatatypeConverter;
 
 public class State {
 
-	private Nodo nodo;
-	private PriorityQueue<Nodo> nodeList;					//ordered list
-	private String md5;
+	private Nodo node;
+	private PriorityQueue<Nodo> listNodes;					//ordered list
+	private String id;
+	
+	
+	public State(){
+		
+	}
 	
 	public State(Nodo nodo, PriorityQueue<Nodo> nodeList) throws NoSuchAlgorithmException{
-		this.nodo = nodo;
-		this.nodeList = nodeList;
-		this.md5 = md5();
+		this.node = nodo;
+		this.listNodes = nodeList;
+		this.id = md5();
 	}
 	
 	
 	public String md5() throws NoSuchAlgorithmException{
 		
-		PriorityQueue<Nodo> myNodeList = nodeList;
+		PriorityQueue<Nodo> myNodeList = listNodes;
 		String aux="";
 		
-		aux += nodo.toString();
+		aux += node.toString();
 		for (byte i=0; i<myNodeList.size(); i++) {
 			aux += myNodeList.poll().toString();
 		}
@@ -39,35 +44,35 @@ public class State {
 
 
 	public Nodo getNodo() {
-		return nodo;
+		return node;
 	}
 
 
 	public void setNodo(Nodo nodo) {
-		this.nodo = nodo;
+		this.node = nodo;
 	}
 
 
 	public PriorityQueue<Nodo> getNodeList() {
-		return nodeList;
+		return listNodes;
 	}
 
 
 	public void setNodeList(PriorityQueue<Nodo> nodeList) {
-		this.nodeList = nodeList;
+		this.listNodes = nodeList;
 	}
 	
 	public String getMd5(){
-		return md5;
+		return id;
 	}
 	
 	public String toString(){
-		PriorityQueue<Nodo> nodeListAux = this.nodeList;
-		String aux = nodo.toString();
+		PriorityQueue<Nodo> nodeListAux = this.listNodes;
+		String aux = node.toString();
 		for(int i = 0; i < nodeListAux.size(); i++){
 			aux += nodeListAux.poll().toString();
 		}
-		aux+= "\nMD5CheckSum = " + this.md5;
+		aux+= "\nMD5CheckSum = " + this.id;
 		
 		return aux;
 	}

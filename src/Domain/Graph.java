@@ -3,6 +3,11 @@ package Domain;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.PriorityQueue;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -16,23 +21,28 @@ import org.xml.sax.SAXException;
 public class Graph {
 	
 	private String XMLFile;
-	private ArrayList<Nodo> NodeList = new ArrayList<Nodo>();
+	private Hashtable<String, Nodo> NodeList = new Hashtable<String, Nodo>();
 	private ArrayList<Edge> EdgeList = new ArrayList<Edge>();
-	
 	private String NAME_KEY = "";
 	private String LEN_KEY = "";
 	
-	public ArrayList<Edge> getEdgeList(){ return EdgeList;}
-	public ArrayList<Nodo> getNodeList(){ return NodeList;}
+	
 	
 	public Graph(String XMLFile) throws ParserConfigurationException, SAXException, IOException {
 		this.XMLFile = XMLFile;
 		ReadXML();
 	}
 	
+	public ArrayList<Edge> getEdgeList(){
+		return EdgeList;
+	}
+	
+	public Hashtable<String, Nodo> getNodeList(){
+		return NodeList;
+	}
+	
 	//info para ReadXML: http://www.mkyong.com/java/how-to-read-xml-file-in-java-dom-parser/
 	//Link para ver los archivos xml que tenemos que leer: https://drive.google.com/drive/folders/1nXPVVJ0E44osD807PZLPlV3-kSvEcpEj
-	
 	public void ReadXML() throws ParserConfigurationException, SAXException, IOException {
 		File f = new File(XMLFile);
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -41,13 +51,9 @@ public class Graph {
 		
 		doc.getDocumentElement().normalize();
 		
-		System.out.println("Root element :" + doc.getDocumentElement().getNodeName() + "\n");
-		
-     	//Nodos
-		
+     	//Nodos	
 		NodeList nList = doc.getElementsByTagName("node");
 		Nodo node;
-		
 		String nodeID;
 		String d4, d5, d6;
 		String source, target, length = "", name = "";
@@ -55,40 +61,36 @@ public class Graph {
 		for (int temp = 0; temp<nList.getLength(); temp++) {
 			Node nNode = nList.item(temp);
 			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-				//Aqui para leer los nodos
-				Element eElement = (Element) nNode;
-				
+				Element eElement = (Element) nNode;	
 				nodeID = eElement.getAttribute("id");
 				d4 = eElement.getElementsByTagName("data").item(0).getTextContent();	//Y AXIS
 				d5 = eElement.getElementsByTagName("data").item(1).getTextContent();	//X AXIS
 				d6 = eElement.getElementsByTagName("data").item(2).getTextContent();	
-			
 				node = new Nodo(nodeID, d4, d5, d6);
-				NodeList.add(node);
-				
+				NodeList.put(nodeID, node);		
 			}
 		}
 		
 		//Edges
-		
 	    nList = doc.getElementsByTagName("edge");
 	    NodeList dList;
-		Edge edge;
-		
+		Edge edge;	
 		NodeList kList;
 		kList = doc.getElementsByTagName("key");
 		
 		for (int k = 0; k<kList.getLength(); k++) {
 			Node kNode = kList.item(k);
 			Element kElement = (Element) kNode;
-			
-			if(kElement.getAttribute("attr.name").equals("name") && kElement.getAttribute("for").equals("edge")) NAME_KEY = kElement.getAttribute("id");
-			else if(kElement.getAttribute("attr.name").equals("length") && kElement.getAttribute("for").equals("edge")) LEN_KEY = kElement.getAttribute("id");
+		
+			if(kElement.getAttribute("attr.name").equals("name") && kElement.getAttribute("for").equals("edge")) 
+				NAME_KEY = kElement.getAttribute("id");
+			else if(kElement.getAttribute("attr.name").equals("length") && kElement.getAttribute("for").equals("edge")) 
+				LEN_KEY = kElement.getAttribute("id");
 			
 		}
 	    
-		System.out.println(NAME_KEY);
-		System.out.println(LEN_KEY);
+		//System.out.println(NAME_KEY);
+		//+System.out.println(LEN_KEY);
 	    
 		for (int temp = 0; temp<nList.getLength(); temp++) {
 			
@@ -138,34 +140,34 @@ public class Graph {
 		}
 	}
 
-	public void adjacentNode(String id){
+	//Modificar este metodo para que devuelva una lista de nodos (TreeNode) /* imposible que devuelva treeNodes */ adyacentes al TreeNode que se pase como argumento. 
+	//Para ello primero hace falta obteener los edges que tiene el nodo 
+	public ArrayList<Nodo> adjacentNode(String id){
 		
-		Nodo initial = null;
-		ArrayList<Edge> adjacentEdges = new ArrayList<Edge>();
-		
-		for(int i = 0; i < NodeList.size(); i++){		
-			if(id.equals(NodeList.get(i).getId())){
-				initial = NodeList.get(i);
-			}
-		}
+		ArrayList<String> strAdjacent = new ArrayList<String>();
+		ArrayList<Nodo> adjacentList = new ArrayList<Nodo>();
+		Nodo initial = new Nodo();
+		Nodo añadido = new Nodo();
+		initial = NodeList.get(id);
 		
 		
 		for(int i = 0; i < EdgeList.size(); i++){
 			if(EdgeList.get(i).getSource().equals(initial.getId())){
-			adjacentEdges.add(EdgeList.get(i));
+				strAdjacent.add(EdgeList.get(i).getTarget());
 			}
 		}
 		
-		String aux = "";
 		
-		for(int i = 0; i < adjacentEdges.size(); i++){
-			
-			aux += "[(" + adjacentEdges.get(i).getSource() + ", " + adjacentEdges.get(i).getTarget() + "). " + adjacentEdges.get(i).getLength() + ". " + adjacentEdges.get(i).getName() + "]\n";
-			
+		for(int i = 0; i < strAdjacent.size(); i++){
+			Iterator it = NodeList.entrySet().iterator();
+			while(it.hasNext()){
+				Map.Entry pair = (Map.Entry)it.next();
+				if(strAdjacent.get(i).equals(pair.getKey())){
+					adjacentList.add(NodeList.get(strAdjacent.get(i)));
+				}
+			}
 		}
-		
-		System.out.println("The adjacent edges for the node " + initial.getId() + " are: \n\n" + aux );
-		
+		return adjacentList;
 	}
 	
 	

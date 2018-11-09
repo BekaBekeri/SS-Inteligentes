@@ -5,6 +5,9 @@ public class Problem {
 	private String graphlmfile;
 	private StateString IntSt;
 	
+	public Problem(){
+		
+	}
 	
 	public Problem(String fileJson, StateString nodoInicial) {
 		this.graphlmfile = fileJson;
