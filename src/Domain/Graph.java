@@ -140,33 +140,36 @@ public class Graph {
 		}
 	}
 
-	//Modificar este metodo para que devuelva una lista de nodos (TreeNode) /* imposible que devuelva treeNodes */ adyacentes al TreeNode que se pase como argumento. 
+	//Modificar este metodo para que devuelva una lista de nodos (TreeNode) adyacentes al TreeNode que se pase como argumento. 
 	//Para ello primero hace falta obteener los edges que tiene el nodo 
-	public ArrayList<Nodo> adjacentNode(String id){
+	public ArrayList<TreeNode> adjacentNode(TreeNode id){
 		
 		ArrayList<String> strAdjacent = new ArrayList<String>();
-		ArrayList<Nodo> adjacentList = new ArrayList<Nodo>();
-		Nodo initial = new Nodo();
-		Nodo añadido = new Nodo();
-		initial = NodeList.get(id);
-		
-		
+		ArrayList<TreeNode> adjacentList = new ArrayList<TreeNode>();
+		ArrayList<Nodo> adjacentNList = new ArrayList<Nodo>();
+			
 		for(int i = 0; i < EdgeList.size(); i++){
-			if(EdgeList.get(i).getSource().equals(initial.getId())){
+			if(EdgeList.get(i).getSource().equals(id)){
 				strAdjacent.add(EdgeList.get(i).getTarget());
 			}
 		}
-		
-		
+			
 		for(int i = 0; i < strAdjacent.size(); i++){
 			Iterator it = NodeList.entrySet().iterator();
 			while(it.hasNext()){
 				Map.Entry pair = (Map.Entry)it.next();
 				if(strAdjacent.get(i).equals(pair.getKey())){
-					adjacentList.add(NodeList.get(strAdjacent.get(i)));
+					adjacentNList.add(NodeList.get(strAdjacent.get(i)));
 				}
 			}
 		}
+		
+		TreeNode tnHijo;
+		for(int i = 0; i < adjacentNList.size(); i++){
+			tnHijo =  new TreeNode(id, id.getCurrentState(), id.depth+1);
+			adjacentList.add(tnHijo);
+		}
+				
 		return adjacentList;
 	}
 	

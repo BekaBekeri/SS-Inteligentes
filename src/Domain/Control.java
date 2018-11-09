@@ -1,7 +1,9 @@
 package Domain;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.SortedSet;
@@ -17,27 +19,38 @@ public class Control {
 	
 	private static boolean solution;
 	private static Graph grafo;
-	private static PriorityQueue<TreeNode> visited;
+	private static Hashtable<String, TreeNode> visited;
 	private static PriorityQueue<TreeNode> frontier;
-	private static ArrayList<Nodo> adyacentes;
 
-	public static void ejecucionPrincipal(Problem problema, boolean prunning, String strategy, int depth) throws ParserConfigurationException, SAXException, IOException {
+	public static void ejecucionPrincipal(Problem problema, boolean prunning, String strategy, int depth) throws ParserConfigurationException, SAXException, IOException, NoSuchAlgorithmException {
 		
+		//INICIALIZACION DE VARIABLES GLOBALES
 		grafo = new Graph(problema.getGraphlmfile());
 		solution = false;
-		visited = new PriorityQueue<TreeNode>();
+		visited = new Hashtable<String, TreeNode>();
 		frontier = new PriorityQueue<TreeNode>();
-		adyacentes = new ArrayList<Nodo>();
-		State estadoInicial = new State();
-		Nodo nodoInicial = new Nodo();
 		
-		nodoInicial = grafo.getNodeList().get(problema.getIntSt().getNode());	
-		adyacentes = grafo.adjacentNode(nodoInicial.getId());
-		System.out.println("Adyacentes: " + adyacentes.toString());
+		//VARIABLES LOCALES
+		int currentDepth = 0;
+		TreeNode tnInicial = obtenerTreeNode(problema);
+		
+		do{
+			visited.clear();
+			frontier.clear();
+			frontier.add(tnInicial);
+			
+			while(!frontier.isEmpty() && !isGoal(frontier.peek().getCurrentState())){
+				visited.put(frontier.peek().md5(), frontier.peek());
+				generateSuccessors(frontier.poll());
+			}
+			currentDepth++;
+			
+		}while(currentDepth <= depth && frontier.isEmpty());
 		
 		
 		
-		switch(strategy){
+		
+		/*switch(strategy){
 		
 			case "BFS":
 					breathFirstSearch(nodoInicial, prunning);
@@ -56,11 +69,46 @@ public class Control {
 				break;
 			default:
 				System.out.println("ERROR WHILE TRYING TO PROCESS THE SEARCH ALGORITHM");
-		}
+		}*/
 		
 		
 	}
 	
+	private static void generateSuccessors(TreeNode tn) {
+		
+		ArrayList<TreeNode> adyacentes = new ArrayList<TreeNode>();
+		adyacentes = grafo.adjacentNode(tn);						//aqui obtengo los hijos de treenode actual pero con el state sin modificar
+		
+		
+		
+		
+	}
+
+	private static boolean isGoal(State currentState) {
+		if (currentState.getNodeList().isEmpty()){
+			return true;
+		}else{
+			return false;
+		}	
+	}
+
+	private static TreeNode obtenerTreeNode(Problem problema) throws NoSuchAlgorithmException {
+		TreeNode inicial = new TreeNode();
+		State estado1 = new State();
+		ArrayList<Nodo> lista = new ArrayList<Nodo>();
+		
+		estado1.setNodo(grafo.getNodeList().get(problema.getIntSt().getNode()));
+		
+		for(int i = 0; i < problema.getIntSt().getListNodes().size(); i++){
+			lista.add(grafo.getNodeList().get(problema.getIntSt().getListNodes().poll()));
+		}
+		
+		estado1 = new State(grafo.getNodeList().get(problema.getIntSt().getNode()), lista);
+		inicial = new TreeNode(null, estado1, 0);
+		
+		return inicial;
+	}
+
 	private static void depthFirstSearch(Nodo nodoInicial, boolean prunning, int depth) {
 	}
 

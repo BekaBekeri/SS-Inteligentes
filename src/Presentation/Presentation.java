@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
@@ -27,7 +28,7 @@ public class Presentation {					//JSON READER
 	
 	static Scanner sc = new Scanner(System.in);
 	
-	public static void main(String[] args) throws UnsupportedEncodingException, IOException, InterruptedException, ParserConfigurationException, SAXException{
+	public static void main(String[] args) throws UnsupportedEncodingException, IOException, InterruptedException, ParserConfigurationException, SAXException, NoSuchAlgorithmException{
 		
 		Problem problem;
 		boolean prunning = false;
@@ -37,9 +38,8 @@ public class Presentation {					//JSON READER
 		problem = readJson();
 		prunning = askPrunning();
 		search = askSearchAlgorithm();
-		if (search.equalsIgnoreCase("DFS") || search.equalsIgnoreCase("IDS") || search.equalsIgnoreCase("DLS")){
-			depth = askDepth();
-		}
+		depth = askDepth();
+
 		
 		Control.ejecucionPrincipal(problem, prunning, search, depth);
 	}
