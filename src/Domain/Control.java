@@ -35,9 +35,39 @@ public class Control {
 		adyacentes = grafo.adjacentNode(nodoInicial.getId());
 		System.out.println("Adyacentes: " + adyacentes.toString());
 		
+		
+		
+		switch(strategy){
+		
+			case "BFS":
+					breathFirstSearch(nodoInicial, prunning);
+				break;
+			case "DFS":
+					depthFirstSearch(nodoInicial, prunning, depth);
+				break;
+			case "DLS":
+					depthLimitedSearch(nodoInicial, prunning, depth);
+				break;
+			case "IDS":
+					iterativeDeepeningSearch(nodoInicial, prunning, depth);
+				break;
+			case "UCS":
+					uniformCostSearch(nodoInicial, prunning, depth);
+				break;
+			default:
+				System.out.println("ERROR WHILE TRYING TO PROCESS THE SEARCH ALGORITHM");
+		}
+		
+		
 	}
 	
-	public static ArrayList<TreeNode> Depth_Limited_Search(Problem problem, String strategy, int MAX_deep){
+	private static void depthFirstSearch(Nodo nodoInicial, boolean prunning, int depth) {
+	}
+
+	private static void breathFirstSearch(Nodo nodoInicial, boolean prunning) {
+	}
+
+	public static ArrayList<TreeNode> depthLimitedSearch(Nodo nodoInicial, boolean prunning, int depth){
 		
 		ArrayList<TreeNode> solucion = new ArrayList<TreeNode>();
 		PriorityQueue<TreeNode> fringe = new PriorityQueue<TreeNode>();
@@ -48,23 +78,11 @@ public class Control {
 		
 	}
 	
+	private static void iterativeDeepeningSearch(Nodo nodoInicial, boolean prunning, int depth) {
+	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	private static void uniformCostSearch(Nodo nodoInicial, boolean prunning, int depth) {	
+	}
 	
 	
 	public static void Testing(){
