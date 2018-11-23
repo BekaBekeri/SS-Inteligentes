@@ -10,30 +10,33 @@ public class TreeNode implements Comparable<TreeNode> {
 	private State currentState;
 	private int depth;
 	private double f;
-	private double value;
-	private double heuristic;
+	private double distance;
 	
 	public TreeNode(TreeNode parent, State currentState, int depth, String strategy) {
 		this.parent = parent;
 		this.currentState = currentState;
 		this.depth = depth;
-		this.heuristic = currentState.getNodeList().size();
-		
+		//this.heuristic = currentState.getNodeList().size();
+		setStrategy(strategy);
+	
+	}
+
+	private void setStrategy(String strategy) {
 		if (strategy.equals("BFS")) {
-			value = depth;
+		
 		}else if(strategy.equals("DFS") || strategy.equals("IDS")){
-			value = -depth;
+			
 		}else if(strategy.equals("UCS")) {
-			value = f;
+			
 		}else if(strategy.equals("A*")) {
-			value = f + heuristic;
+			
 }
 	}
 
 	//lnglat = [longitud=ejeX, latitud=ejey];
-	public double setDistance(TreeNode tn1, TreeNode tn2) {
+	public double setDistance(TreeNode tn1, Nodo tn2) {
 		double[] lnglat1 = {Double.valueOf(tn1.getCurrentState().getNodo().getXAxis()), Double.valueOf(tn1.getCurrentState().getNodo().getYAxis())};
-		double[] lnglat2 = {Double.valueOf(tn2.getCurrentState().getNodo().getXAxis()), Double.valueOf(tn2.getCurrentState().getNodo().getYAxis())};
+		double[] lnglat2 = {Double.valueOf(tn2.getXAxis()), Double.valueOf(tn2.getYAxis())};
 		double earthR = 6371009;
 		
 		
@@ -52,8 +55,16 @@ public class TreeNode implements Comparable<TreeNode> {
 	}
 
 	public TreeNode() {
+	
+	}
+	
+	public double getDistance() {
+		return distance;
 	}
 
+	public void setDistance(double distance) {
+		this.distance = distance;
+	}	
 	public double getF() {
 		return f;
 	}

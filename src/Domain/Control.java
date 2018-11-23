@@ -17,8 +17,9 @@ public class Control {
 	
 	private static boolean solution;
 	private static Graph grafo;
-	private static Hashtable<String, Double> visited;
+	private static Hashtable<String, Double> visited;		//<MD5, F>
 	private static PriorityQueue<TreeNode> frontier;
+	private static Nodo lastNode;
 
 	public static void ejecucionPrincipal(Problem problema, boolean prunning, String strategy, int depth) throws ParserConfigurationException, SAXException, IOException, NoSuchAlgorithmException {
 		
@@ -27,7 +28,8 @@ public class Control {
 		solution = false;
 		visited = new Hashtable<String, Double>();
 		frontier = new PriorityQueue<TreeNode>();
-		TreeNode tnInicial = obtenerTreeNode(problema);
+		TreeNode tnInicial = obtenerTreeNode(problema, strategy);
+		lastNode = tnInicial.getCurrentState().getNodeList().get(tnInicial.getCurrentState().getNodeList().size()-1);
 		
 		search(tnInicial, prunning, depth, strategy);
 		
@@ -35,41 +37,37 @@ public class Control {
 	
 	
 	private static void search(TreeNode tnInicial, boolean prunning, int depth, String strategy) throws NoSuchAlgorithmException {
-	
-		int depthNow = 0;
+		int currentDepth;
 		solution = false;
 		
-		while(!solution && depthNow <= depth){
-			solution = searchAlgortihm(tnInicial, prunning, depth, strategy);
+		if(strategy.equalsIgnoreCase("IDS")){
+			currentDepth = 0;
+		}else{
+			currentDepth = depth;
 		}
 		
-	}
-
-	private static boolean searchAlgortihm(TreeNode tnInicial, boolean prunning, int depth, String strategy) throws NoSuchAlgorithmException {
-		
-		PriorityQueue<TreeNode> sucesores = new PriorityQueue<TreeNode>();
-		TreeNode actual = new TreeNode();
-		frontier.add(tnInicial);
-		visited.put(tnInicial.md5(), tnInicial.getF());
-		
-		while(!solution && !frontier.isEmpty()){
-			actual = frontier.poll();
+		do{
+			visited.clear();
+			frontier.clear();
+			frontier.add(tnInicial);
 			
-			if(isGoal(actual.getCurrentState())){
-				solution = true;
-			}else{
-				sucesores = generateSuccessors(actual, prunning);
+			while(!frontier.isEmpty() && isGoal(frontier.peek().getCurrentState())){
+				
+				visited.put(frontier.peek().md5(), frontier.peek().getF());
+				generateSuccessors(frontier.poll(), prunning, strategy);
 			}
-		}
+			
+			currentDepth++;
+			
+		}while(currentDepth<=depth && frontier.isEmpty());
 		
-		return false;
+		
 	}
 
 	// AUXILIAR METHODS
 
-	private static PriorityQueue<TreeNode> generateSuccessors(TreeNode tn, boolean prunning) throws NoSuchAlgorithmException {
+	private static void generateSuccessors(TreeNode tn, boolean prunning, String strategy) throws NoSuchAlgorithmException {
 		
-		PriorityQueue<TreeNode> fooFrontier = new PriorityQueue<TreeNode>();
 		Nodo fooNode = new Nodo();
 		State fooState = new State();
 		TreeNode fooTN = new TreeNode();
@@ -92,21 +90,19 @@ public class Control {
 			fooNode = adyacentes.get(i).getCurrentState().getNodo();												
 			fooState.setNodo(fooNode);
 			fooTN.setCurrentState(fooState);
-			
-			fooTN.setF(fooTN.setDistance(fooTN, tn));
-			if (prunning){																							//OPTIMIZATION
+			fooTN.setF(fooTN.setDistance(fooTN, lastNode));															// distance from each node to the last one 
+			//TODO FOOTN SET STRATEGY
+			if (prunning){																							// OPTIMIZATION
 				if(checkVisited(fooTN)){
-					fooFrontier.add(fooTN);
+					frontier.add(fooTN);
 				}
 			}else{
-				fooFrontier.add(fooTN);
+				frontier.add(fooTN);
 			}
 			
 		}
-		
-		return fooFrontier;
 	}
-
+ 
 	private static boolean checkVisited(TreeNode fooTN) throws NoSuchAlgorithmException {
 		
 		if(visited.get(fooTN.md5()) != null){
@@ -129,7 +125,7 @@ public class Control {
 		}	
 	}
 
-	private static TreeNode obtenerTreeNode(Problem problema) throws NoSuchAlgorithmException {
+	private static TreeNode obtenerTreeNode(Problem problema, String strategy) throws NoSuchAlgorithmException {
 		TreeNode inicial = new TreeNode();
 		State estado1 = new State();
 		ArrayList<Nodo> lista = new ArrayList<Nodo>();
@@ -141,7 +137,7 @@ public class Control {
 		}
 		
 		estado1 = new State(grafo.getNodeList().get(problema.getIntSt().getNode()), lista);
-		inicial = new TreeNode(null, estado1, 0);
+		inicial = new TreeNode(null, estado1, 0, strategy);
 		
 		return inicial;
 	}
