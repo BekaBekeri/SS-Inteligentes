@@ -3,25 +3,19 @@ package Presentation;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Iterator;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
-import com.google.*;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import Domain.Control;
 import Domain.Problem;
-
-import java.util.*;
 
 public class Presentation {					//JSON READER
 	

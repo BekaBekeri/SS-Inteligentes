@@ -52,8 +52,6 @@ public class Nodo {
 	}
 	
 	public String toString(){
-		String aux = "";
-		aux = "ID: " + this.id + ", [" + this.xAxis + ", " + this.yAxis + "], " + this.osmid;
-		return aux;
+		return "NODO: " + id;
 	}
 }

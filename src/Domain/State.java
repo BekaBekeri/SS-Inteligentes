@@ -2,7 +2,7 @@ package Domain;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.ArrayList;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -62,19 +62,24 @@ public class State {
 		this.listNodes = nodeList;
 	}
 	
+	public void setMD5() throws NoSuchAlgorithmException{
+		id = md5();
+	}
+	
 	public String getMd5(){
 		return id;
 	}
 	
 	public String toString(){
-		ArrayList<Nodo> nodeListAux = this.listNodes;
-		String aux = node.toString();
-		for(int i = 0; i < nodeListAux.size(); i++){
-			aux += nodeListAux.get(i).toString();
+		String aux = "[";
+		for(int i = 0; i < listNodes.size(); i++){
+			if(i == listNodes.size()-1)
+				aux += listNodes.get(i).toString();
+			else
+				aux += listNodes.get(i).toString() + ", ";
 		}
-		aux+= "\nMD5CheckSum = " + this.id;
-		
-		return aux;
+		aux += "]";
+		return "ESTADO" + node.toString() + " " + aux;
 	}
 	
 }

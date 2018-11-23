@@ -13,13 +13,11 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
-import Presentation.Presentation;
-
 public class Control {
 	
 	private static boolean solution;
 	private static Graph grafo;
-	private static Hashtable<String, TreeNode> visited;
+	private static Hashtable<String, Double> visited;
 	private static PriorityQueue<TreeNode> frontier;
 
 	public static void ejecucionPrincipal(Problem problema, boolean prunning, String strategy, int depth) throws ParserConfigurationException, SAXException, IOException, NoSuchAlgorithmException {
@@ -27,61 +25,100 @@ public class Control {
 		//INICIALIZACION DE VARIABLES GLOBALES
 		grafo = new Graph(problema.getGraphlmfile());
 		solution = false;
-		visited = new Hashtable<String, TreeNode>();
+		visited = new Hashtable<String, Double>();
 		frontier = new PriorityQueue<TreeNode>();
-		
-		//VARIABLES LOCALES
-		int currentDepth = 0;
 		TreeNode tnInicial = obtenerTreeNode(problema);
 		
-		do{
-			visited.clear();
-			frontier.clear();
-			frontier.add(tnInicial);
-			
-			while(!frontier.isEmpty() && !isGoal(frontier.peek().getCurrentState())){
-				visited.put(frontier.peek().md5(), frontier.peek());
-				generateSuccessors(frontier.poll());
-			}
-			currentDepth++;
-			
-		}while(currentDepth <= depth && frontier.isEmpty());
-		
-		
-		
-		
-		/*switch(strategy){
-		
-			case "BFS":
-					breathFirstSearch(nodoInicial, prunning);
-				break;
-			case "DFS":
-					depthFirstSearch(nodoInicial, prunning, depth);
-				break;
-			case "DLS":
-					depthLimitedSearch(nodoInicial, prunning, depth);
-				break;
-			case "IDS":
-					iterativeDeepeningSearch(nodoInicial, prunning, depth);
-				break;
-			case "UCS":
-					uniformCostSearch(nodoInicial, prunning, depth);
-				break;
-			default:
-				System.out.println("ERROR WHILE TRYING TO PROCESS THE SEARCH ALGORITHM");
-		}*/
-		
+		search(tnInicial, prunning, depth, strategy);
 		
 	}
 	
-	private static void generateSuccessors(TreeNode tn) {
+	
+	private static void search(TreeNode tnInicial, boolean prunning, int depth, String strategy) throws NoSuchAlgorithmException {
+	
+		int depthNow = 0;
+		solution = false;
 		
+		while(!solution && depthNow <= depth){
+			solution = searchAlgortihm(tnInicial, prunning, depth, strategy);
+		}
+		
+	}
+
+	private static boolean searchAlgortihm(TreeNode tnInicial, boolean prunning, int depth, String strategy) throws NoSuchAlgorithmException {
+		
+		PriorityQueue<TreeNode> sucesores = new PriorityQueue<TreeNode>();
+		TreeNode actual = new TreeNode();
+		frontier.add(tnInicial);
+		visited.put(tnInicial.md5(), tnInicial.getF());
+		
+		while(!solution && !frontier.isEmpty()){
+			actual = frontier.poll();
+			
+			if(isGoal(actual.getCurrentState())){
+				solution = true;
+			}else{
+				sucesores = generateSuccessors(actual, prunning);
+			}
+		}
+		
+		return false;
+	}
+
+	// AUXILIAR METHODS
+
+	private static PriorityQueue<TreeNode> generateSuccessors(TreeNode tn, boolean prunning) throws NoSuchAlgorithmException {
+		
+		PriorityQueue<TreeNode> fooFrontier = new PriorityQueue<TreeNode>();
+		Nodo fooNode = new Nodo();
+		State fooState = new State();
+		TreeNode fooTN = new TreeNode();
 		ArrayList<TreeNode> adyacentes = new ArrayList<TreeNode>();
-		adyacentes = grafo.adjacentNode(tn);						//aqui obtengo los hijos de treenode actual pero con el state sin modificar
+		adyacentes = grafo.adjacentNode(tn);							//aqui obtengo los hijos de treenode actual pero con el state sin modificar
+		fooState = tn.getCurrentState();
+
+		for(int i = 0; i < adyacentes.size(); i++){
+			//creacion nuevo tn
+			fooTN = adyacentes.get(i);																				// obtenemos el adyacente actual
+			fooTN.setDepth(tn.getDepth() + 1);																		// su profundidad es la del padre + 1
+			fooTN.setParent(tn);																					// definimos su padre
+			// creacion nuevo state								
+			fooState = fooTN.getCurrentState();																		// el estado del hijo es igual a no se que se de
+			if(fooState.getNodeList().contains(adyacentes.get(i).getCurrentState().getNodo())){						// el caso de que uno de los adyacentes sea uno de los subgoals
+				fooState.getNodeList().remove(adyacentes.get(i).getCurrentState().getNodo());						// se elimina de la lista de nodos del estado hijo
+				fooState.setMD5();																					// y se vuelve a calcular el md5
+			}
+			//obtencion del nodo adyacente al que se mueve 
+			fooNode = adyacentes.get(i).getCurrentState().getNodo();												
+			fooState.setNodo(fooNode);
+			fooTN.setCurrentState(fooState);
+			
+			fooTN.setF(fooTN.setDistance(fooTN, tn));
+			if (prunning){																							//OPTIMIZATION
+				if(checkVisited(fooTN)){
+					fooFrontier.add(fooTN);
+				}
+			}else{
+				fooFrontier.add(fooTN);
+			}
+			
+		}
 		
+		return fooFrontier;
+	}
+
+	private static boolean checkVisited(TreeNode fooTN) throws NoSuchAlgorithmException {
 		
-		
-		
+		if(visited.get(fooTN.md5()) != null){
+			if(fooTN.getF() < visited.get(fooTN.md5())){
+				visited.put(fooTN.md5(), fooTN.getF());
+				return true;
+			}else{
+				return true;
+			}
+		}else{
+			return false;
+		}
 	}
 
 	private static boolean isGoal(State currentState) {
@@ -109,29 +146,8 @@ public class Control {
 		return inicial;
 	}
 
-	private static void depthFirstSearch(Nodo nodoInicial, boolean prunning, int depth) {
-	}
-
-	private static void breathFirstSearch(Nodo nodoInicial, boolean prunning) {
-	}
-
-	public static ArrayList<TreeNode> depthLimitedSearch(Nodo nodoInicial, boolean prunning, int depth){
-		
-		ArrayList<TreeNode> solucion = new ArrayList<TreeNode>();
-		PriorityQueue<TreeNode> fringe = new PriorityQueue<TreeNode>();
-				
-		
-		
-		return solucion;
-		
-	}
 	
-	private static void iterativeDeepeningSearch(Nodo nodoInicial, boolean prunning, int depth) {
-	}
-	
-	private static void uniformCostSearch(Nodo nodoInicial, boolean prunning, int depth) {	
-	}
-	
+	// TESTING METHODS
 	
 	public static void Testing(){
 		TreeNode tn;

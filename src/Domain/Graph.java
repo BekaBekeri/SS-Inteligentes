@@ -6,16 +6,15 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.PriorityQueue;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class Graph {
@@ -149,7 +148,7 @@ public class Graph {
 		ArrayList<Nodo> adjacentNList = new ArrayList<Nodo>();
 			
 		for(int i = 0; i < EdgeList.size(); i++){
-			if(EdgeList.get(i).getSource().equals(id)){
+			if(EdgeList.get(i).getSource().equals(id.getCurrentState().getNodo().getId())){
 				strAdjacent.add(EdgeList.get(i).getTarget());
 			}
 		}
@@ -169,7 +168,7 @@ public class Graph {
 			tnHijo =  new TreeNode(id, id.getCurrentState(), id.depth+1);
 			adjacentList.add(tnHijo);
 		}
-				
+		
 		return adjacentList;
 	}
 	
