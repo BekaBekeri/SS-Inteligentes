@@ -10,7 +10,7 @@ public class TreeNode implements Comparable<TreeNode> {
 	private State currentState;
 	private int depth;
 	private double f;
-	private double distance;
+	private double value;
 	
 	public TreeNode(TreeNode parent, State currentState, int depth, String strategy) {
 		this.parent = parent;
@@ -23,13 +23,13 @@ public class TreeNode implements Comparable<TreeNode> {
 
 	private void setStrategy(String strategy) {
 		if (strategy.equals("BFS")) {
-		
+			f = depth;
 		}else if(strategy.equals("DFS") || strategy.equals("IDS")){
-			
+			f = -depth;
 		}else if(strategy.equals("UCS")) {
-			
+			f = cost
 		}else if(strategy.equals("A*")) {
-			
+			f = cost; //+ HEURISTICA COJONES
 }
 	}
 
