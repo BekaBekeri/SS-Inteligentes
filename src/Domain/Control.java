@@ -19,7 +19,6 @@ public class Control {
 	private static Graph grafo;
 	private static Hashtable<String, Double> visited;		//<MD5, F>
 	private static PriorityQueue<TreeNode> frontier;
-	private static Nodo lastNode;
 
 	public static void ejecucionPrincipal(Problem problema, boolean prunning, String strategy, int depth) throws ParserConfigurationException, SAXException, IOException, NoSuchAlgorithmException {
 		
@@ -29,7 +28,6 @@ public class Control {
 		visited = new Hashtable<String, Double>();
 		frontier = new PriorityQueue<TreeNode>();
 		TreeNode tnInicial = obtenerTreeNode(problema, strategy);
-		lastNode = tnInicial.getCurrentState().getNodeList().get(tnInicial.getCurrentState().getNodeList().size()-1);
 		
 		search(tnInicial, prunning, depth, strategy);
 		
@@ -72,27 +70,20 @@ public class Control {
 		State fooState = new State();
 		TreeNode fooTN = new TreeNode();
 		ArrayList<TreeNode> adyacentes = new ArrayList<TreeNode>();
-		adyacentes = grafo.adjacentNode(tn);							//aqui obtengo los hijos de treenode actual pero con el state sin modificar
+		adyacentes = grafo.adjacentNode(tn, strategy);							//aqui obtengo los hijos de treenode actual pero con el state sin modificar
 		fooState = tn.getCurrentState();
 
 		for(int i = 0; i < adyacentes.size(); i++){
-			//creacion nuevo tn
-			fooTN = adyacentes.get(i);																				// obtenemos el adyacente actual
-			fooTN.setDepth(tn.getDepth() + 1);																		// su profundidad es la del padre + 1
-			fooTN.setParent(tn);																					// definimos su padre
-			// creacion nuevo state								
-			fooState = fooTN.getCurrentState();																		// el estado del hijo es igual a no se que se de
+									
+			fooState = adyacentes.get(i).getCurrentState();															// el estado del hijo es igual a no se que se de
 			if(fooState.getNodeList().contains(adyacentes.get(i).getCurrentState().getNodo())){						// el caso de que uno de los adyacentes sea uno de los subgoals
 				fooState.getNodeList().remove(adyacentes.get(i).getCurrentState().getNodo());						// se elimina de la lista de nodos del estado hijo
 				fooState.setMD5();																					// y se vuelve a calcular el md5
 			}
-			//obtencion del nodo adyacente al que se mueve 
 			fooNode = adyacentes.get(i).getCurrentState().getNodo();												
 			fooState.setNodo(fooNode);
-			fooTN.setCurrentState(fooState);
-			fooTN.setF(fooTN.setDistance(fooTN, lastNode));															// distance from each node to the last one 
-			//TODO FOOTN SET STRATEGY
-			if (prunning){																							// OPTIMIZATION
+			fooTN = new TreeNode(tn, fooState, tn.getDepth(), strategy, tn.setDistance(fooNode, tn.getCurrentState().getNodo()));
+			if (prunning){																							
 				if(checkVisited(fooTN)){
 					frontier.add(fooTN);
 				}
@@ -137,7 +128,7 @@ public class Control {
 		}
 		
 		estado1 = new State(grafo.getNodeList().get(problema.getIntSt().getNode()), lista);
-		inicial = new TreeNode(null, estado1, 0, strategy);
+		inicial = new TreeNode(null, estado1, 0, strategy, 0);
 		
 		return inicial;
 	}
@@ -196,7 +187,7 @@ public class Control {
 		}
 		
 		for(int i = 0; i < 100; i++){
-			System.out.println("PriorityQ Node Nº: " + (i+1) + " with f: " + pQueue.poll().f);	
+			System.out.println("PriorityQ Node Nº: " + (i+1) + " with f: " + pQueue.poll().getF());	
 		}
 	}
 	

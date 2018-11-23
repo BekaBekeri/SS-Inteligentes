@@ -141,7 +141,7 @@ public class Graph {
 
 	//Modificar este metodo para que devuelva una lista de nodos (TreeNode) adyacentes al TreeNode que se pase como argumento. 
 	//Para ello primero hace falta obteener los edges que tiene el nodo 
-	public ArrayList<TreeNode> adjacentNode(TreeNode id){
+	public ArrayList<TreeNode> adjacentNode(TreeNode id, String strategy){
 		
 		ArrayList<String> strAdjacent = new ArrayList<String>();
 		ArrayList<TreeNode> adjacentList = new ArrayList<TreeNode>();
@@ -163,9 +163,9 @@ public class Graph {
 			}
 		}
 		
-		TreeNode tnHijo;
+		TreeNode tnHijo = new TreeNode();
 		for(int i = 0; i < adjacentNList.size(); i++){
-			tnHijo =  new TreeNode(id, id.getCurrentState(), id.depth+1);
+			tnHijo =  new TreeNode(id, id.getCurrentState(), id.getDepth() + 1, strategy, tnHijo.setDistance(id.getCurrentState().getNodo(), adjacentList.get(i).getCurrentState().getNodo()));
 			adjacentList.add(tnHijo);
 		}
 		

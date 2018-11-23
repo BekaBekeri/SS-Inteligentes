@@ -10,15 +10,36 @@ public class TreeNode implements Comparable<TreeNode> {
 	private State currentState;
 	private int depth;
 	private double f;
-	private double value;
+	private double cost;
+	private double heuristic;
 	
-	public TreeNode(TreeNode parent, State currentState, int depth, String strategy) {
+	public TreeNode(TreeNode parent, State currentState, int depth, String strategy, double cost) {
 		this.parent = parent;
 		this.currentState = currentState;
-		this.depth = depth;
-		//this.heuristic = currentState.getNodeList().size();
+		if(parent != null){
+			this.cost = parent.getCost() + cost;
+			this.depth = parent.getDepth() + 1;
+		}else{
+			this.cost = cost;
+			this.depth = depth;
+		}
+		setHeuristic(currentState);
 		setStrategy(strategy);
 	
+	}
+
+	private void setHeuristic(State currentState2) {
+		double min = 99999999;
+		double aux = 0;
+		
+		for(int i = 0; i < currentState.getNodeList().size(); i++){
+			aux = setDistance(currentState.getNodo(), currentState.getNodeList().get(i));
+			if(aux < min){
+				min = aux;
+				aux = 0;
+			}
+		}
+		this.heuristic = min;
 	}
 
 	private void setStrategy(String strategy) {
@@ -27,15 +48,15 @@ public class TreeNode implements Comparable<TreeNode> {
 		}else if(strategy.equals("DFS") || strategy.equals("IDS")){
 			f = -depth;
 		}else if(strategy.equals("UCS")) {
-			f = cost
+			f = cost; 
 		}else if(strategy.equals("A*")) {
-			f = cost; //+ HEURISTICA COJONES
+			f = cost + heuristic;
 }
 	}
 
 	//lnglat = [longitud=ejeX, latitud=ejey];
-	public double setDistance(TreeNode tn1, Nodo tn2) {
-		double[] lnglat1 = {Double.valueOf(tn1.getCurrentState().getNodo().getXAxis()), Double.valueOf(tn1.getCurrentState().getNodo().getYAxis())};
+	public double setDistance(Nodo tn1, Nodo tn2) {
+		double[] lnglat1 = {Double.valueOf(tn1.getXAxis()), Double.valueOf(tn1.getYAxis())};
 		double[] lnglat2 = {Double.valueOf(tn2.getXAxis()), Double.valueOf(tn2.getYAxis())};
 		double earthR = 6371009;
 		
@@ -57,20 +78,39 @@ public class TreeNode implements Comparable<TreeNode> {
 	public TreeNode() {
 	
 	}
-	
-	public double getDistance() {
-		return distance;
-	}
 
-	public void setDistance(double distance) {
-		this.distance = distance;
-	}	
+
 	public double getF() {
 		return f;
 	}
 	
+	public double getCost() {
+		return cost;
+	}
+
+	public void setCost(double cost) {
+		this.cost = cost;
+	}
+
+	public double getHeuristic() {
+		return heuristic;
+	}
+
+	public void setHeuristic(double heuristic) {
+		this.heuristic = heuristic;
+	}
+
 	public int compareTo(TreeNode tn) {
-		return  (int) (this.f - tn.getF());
+		int r = 0;
+		
+		if(tn.getF() > this.f){
+			r = -1;
+		}
+		else if(tn.getF() < this.f){
+			r = +1;
+		}
+		
+		return r;
 	}
 
 	public TreeNode getParent() {
