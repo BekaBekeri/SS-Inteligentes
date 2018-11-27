@@ -6,12 +6,16 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.SortedSet;
+import java.util.Stack;
 import java.util.TreeSet;
 
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
+
+import javafx.animation.ScaleTransition;
 
 public class Control {
 	
@@ -29,66 +33,135 @@ public class Control {
 		frontier = new PriorityQueue<TreeNode>();
 		TreeNode tnInicial = obtenerTreeNode(problema, strategy);
 		
+		System.out.println("Empezando la ejcucion con el siguiente estado:" + 
+						   "\n\t Node id: " + tnInicial.getCurrentState().getNodo().getId() + 
+						   "\n\t List of goals: " + tnInicial.getCurrentState().getNodeList().toString() + 
+						   "\n\t [Prunning = " + prunning+ ", maxDepth = " + depth + ", Strategy = " + strategy + "]");	
+		
 		search(tnInicial, prunning, depth, strategy);
+		
 		
 	}
 	
 	
 	private static void search(TreeNode tnInicial, boolean prunning, int depth, String strategy) throws NoSuchAlgorithmException {
-		int currentDepth;
+
 		solution = false;
+		int currentDepth = 0;
 		
+			
 		if(strategy.equalsIgnoreCase("IDS")){
-			currentDepth = 0;
+			do{
+				currentDepth++;
+				visited.clear();
+				frontier.clear();
+				frontier.add(tnInicial);
+				realSearch(currentDepth, prunning, strategy);	
+			}while(currentDepth <= depth);	
 		}else{
-			currentDepth = depth;
-		}
-		
-		do{
 			visited.clear();
 			frontier.clear();
 			frontier.add(tnInicial);
-			
-			while(!frontier.isEmpty() && isGoal(frontier.peek().getCurrentState())){
+			realSearch(depth, prunning, strategy);
+		}
+		
+		if(frontier.isEmpty()){
+			System.out.println("[NO SOLUTION FOUND]");
+		}else{
+			if(isGoal(frontier.peek().getCurrentState())){
+				System.out.println("[SOLUTION FOUND]");
 				
-				visited.put(frontier.peek().md5(), frontier.peek().getF());
-				generateSuccessors(frontier.poll(), prunning, strategy);
+				solution = true;
+				System.out.println(createSolution(frontier.peek()));
 			}
-			
-			currentDepth++;
-			
-		}while(currentDepth<=depth && frontier.isEmpty());
+		}
+		
 		
 		
 	}
+
+	private static void realSearch(int depth, boolean prunning, String strategy) throws NoSuchAlgorithmException {
+		while(!frontier.isEmpty() && !isGoal(frontier.peek().getCurrentState()) && frontier.peek().getDepth() < depth){
+			System.out.println("Expandiendo nodo: " + frontier.peek().toString());
+			visited.put(md5(frontier.peek()), Math.abs(frontier.peek().getF()));
+			generateSuccessors(frontier.poll(), prunning, strategy);
+		}
+
+	}
+
+
+	private static String createSolution(TreeNode peek) {
+		
+		int aux = 0;
+		String exit = "";
+		Stack<TreeNode> solution = new Stack<TreeNode>();
+		TreeNode fooNode = new TreeNode();
+		TreeNode father = new TreeNode();
+		fooNode = peek;
+		
+		do{	
+			father = fooNode.getParent();
+			solution.push(fooNode);
+			fooNode = father;	
+		}while(fooNode.getParent() != null);
+		
+		while(!solution.isEmpty()){
+			
+			fooNode = solution.pop();
+			exit += "Step Nº" + ++aux + " \n\tnode id: " + fooNode.getCurrentState().getNodo().getId() + "\n\tGoal List :" + fooNode.getCurrentState().getNodeList().toString() + "\n";
+		
+		}
+		
+		
+		return exit;
+	}
+
 
 	// AUXILIAR METHODS
 
 	private static void generateSuccessors(TreeNode tn, boolean prunning, String strategy) throws NoSuchAlgorithmException {
 		
-		Nodo fooNode = new Nodo();
+		TreeNode original = tn;
 		State fooState = new State();
 		TreeNode fooTN = new TreeNode();
 		ArrayList<TreeNode> adyacentes = new ArrayList<TreeNode>();
 		adyacentes = grafo.adjacentNode(tn, strategy);							//aqui obtengo los hijos de treenode actual pero con el state sin modificar
-		fooState = tn.getCurrentState();
 
+		
 		for(int i = 0; i < adyacentes.size(); i++){
-									
-			fooState = adyacentes.get(i).getCurrentState();															// el estado del hijo es igual a no se que se de
+
+			
+
+			fooState.setNodo(adyacentes.get(i).getCurrentState().getNodo());															// el estado del hijo es igual a no se que se de
+			fooState.setNodeList(tn.getCurrentState().getNodeList());
 			if(fooState.getNodeList().contains(adyacentes.get(i).getCurrentState().getNodo())){						// el caso de que uno de los adyacentes sea uno de los subgoals
 				fooState.getNodeList().remove(adyacentes.get(i).getCurrentState().getNodo());						// se elimina de la lista de nodos del estado hijo
 				fooState.setMD5();																					// y se vuelve a calcular el md5
-			}
-			fooNode = adyacentes.get(i).getCurrentState().getNodo();												
-			fooState.setNodo(fooNode);
-			fooTN = new TreeNode(tn, fooState, tn.getDepth(), strategy, tn.setDistance(fooNode, tn.getCurrentState().getNodo()));
-			if (prunning){																							
-				if(checkVisited(fooTN)){
+			}											
+			
+			
+			fooTN = new TreeNode(tn, fooState, tn.getDepth() + 1, strategy, tn.setDistance(fooState.getNodo(), tn.getCurrentState().getNodo()));
+			
+			if(tn.getParent() != null){
+				System.out.println(visited.size());
+				//System.out.println(fooTN.getCurrentState().getNodo().getId() + " " + tn.getParent().getCurrentState().getNodo().getId());
+				if(!fooTN.getCurrentState().getNodo().getId().equalsIgnoreCase(tn.getParent().getCurrentState().getNodo().getId())){
+					if (prunning){
+						if(checkVisited(fooTN)){
+							frontier.add(fooTN);
+						}
+					}else{
+						frontier.add(fooTN);
+					}
+				}	
+			}else{
+				if (prunning){
+					if(checkVisited(fooTN)){
+						frontier.add(fooTN);
+					}
+				}else{
 					frontier.add(fooTN);
 				}
-			}else{
-				frontier.add(fooTN);
 			}
 			
 		}
@@ -96,15 +169,15 @@ public class Control {
  
 	private static boolean checkVisited(TreeNode fooTN) throws NoSuchAlgorithmException {
 		
-		if(visited.get(fooTN.md5()) != null){
-			if(fooTN.getF() < visited.get(fooTN.md5())){
-				visited.put(fooTN.md5(), fooTN.getF());
+		if(visited.get(md5(fooTN)) != null){
+			if(fooTN.getF() < visited.get(md5(fooTN))){
+				visited.put(md5(fooTN), fooTN.getF());
 				return true;
 			}else{
-				return true;
+				return false;
 			}
 		}else{
-			return false;
+			return true;
 		}
 	}
 
@@ -133,6 +206,15 @@ public class Control {
 		return inicial;
 	}
 
+	public static String md5(TreeNode tn) throws NoSuchAlgorithmException{
+		
+		String aux="";
+		aux += tn.getCurrentState().getNodo().getId();
+		//aux += tn.getF();
+		//aux += tn.getDepth();			
+
+		return aux;
+	}
 	
 	// TESTING METHODS
 	

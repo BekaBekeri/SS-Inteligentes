@@ -71,13 +71,14 @@ public class Presentation {					//JSON READER
 		String strategy=null;
 		int option= -1;
 		
-		while (option<1 || option>5) {
+		while (option<1 || option>6) {
 			System.out.println("Choose an strategy. Note that all of them are limited by previous maximun depth introduced: ");
 			System.out.println("1-BFS (Breath-first search).");
 			System.out.println("2-DFS (Depth-first search).");
 			System.out.println("3-IDS (Iterative deepening search).");
 			System.out.println("4-DLS (Depth limited search");
 			System.out.println("5-UCS (Uniform cost search).");
+			System.out.println("6-A*");
 			option = integerController();
 			switch (option){
 			case 1:
@@ -95,8 +96,11 @@ public class Presentation {					//JSON READER
 			case 5:
 				strategy = "UCS";
 				break;
+			case 6:
+				strategy = "A*";
+				break;
 			default:
-				System.out.println("Please introduce 1,2,3, 4, or 5.\n");
+				System.out.println("Please introduce 1,2,3, 4, 5 or 6.\n");
 				option=-1;
 				sc.nextLine();
 			}
@@ -125,7 +129,7 @@ public class Presentation {					//JSON READER
 		Gson gson =  new Gson();
 			
 		try{
-			BufferedReader br = new BufferedReader(new FileReader("jsonPrueba.json"));
+			BufferedReader br = new BufferedReader(new FileReader("ejemploA1.json"));
 			init = gson.fromJson(br, Problem.class);
 		}catch(IOException e){
 			e.printStackTrace();

@@ -2,6 +2,7 @@ package Domain;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -141,7 +142,7 @@ public class Graph {
 
 	//Modificar este metodo para que devuelva una lista de nodos (TreeNode) adyacentes al TreeNode que se pase como argumento. 
 	//Para ello primero hace falta obteener los edges que tiene el nodo 
-	public ArrayList<TreeNode> adjacentNode(TreeNode id, String strategy){
+	public ArrayList<TreeNode> adjacentNode(TreeNode id, String strategy) throws NoSuchAlgorithmException{
 		
 		ArrayList<String> strAdjacent = new ArrayList<String>();
 		ArrayList<TreeNode> adjacentList = new ArrayList<TreeNode>();
@@ -164,9 +165,21 @@ public class Graph {
 		}
 		
 		TreeNode tnHijo = new TreeNode();
+		State fooState = new State();
+		//System.out.println("adyacentes: "+ adjacentNList.toString());
 		for(int i = 0; i < adjacentNList.size(); i++){
-			tnHijo =  new TreeNode(id, id.getCurrentState(), id.getDepth() + 1, strategy, tnHijo.setDistance(id.getCurrentState().getNodo(), adjacentList.get(i).getCurrentState().getNodo()));
-			adjacentList.add(tnHijo);
+			
+			fooState = new State(adjacentNList.get(i), id.getCurrentState().getNodeList());
+			tnHijo =  new TreeNode(id, fooState, id.getDepth() + 1, strategy, tnHijo.setDistance(id.getCurrentState().getNodo(), adjacentNList.get(i)));
+			if(id.getParent() != null){
+				//System.out.println(tnHijo.getCurrentState().getNodo().getId() + " " + id.getCurrentState().getNodo().getId());
+				if(!tnHijo.getCurrentState().getNodo().getId().equalsIgnoreCase(id.getCurrentState().getNodo().getId())){
+					adjacentList.add(tnHijo);
+				}
+			}else{
+				adjacentList.add(tnHijo);
+			}
+			
 		}
 		
 		return adjacentList;

@@ -142,29 +142,17 @@ public class TreeNode implements Comparable<TreeNode> {
 	}
 	
 	public String toString(){
-		String aux = "TREENODE: ";
+		String aux = "";
 		if(parent != null){
-			aux += "\n\t Parent: " + parent.getCurrentState().getNodo().getId() + ", CurrentState: " + currentState.toString() + ", depth: " + depth + ", f: " + f + ".";
+			aux += "\n\t parent: " + parent.getCurrentState().getNodo().getId() + ",\n\t State: " + currentState.getNodo() + ",\n\t depth: " + depth + ",\n\t Subgoal: " + currentState.getNodeList().toString() + "\n\t f: " + f;
+			//aux += "\n\t Parent: " + parent.getCurrentState().getNodo().getId() + ", CurrentState: " + currentState.toString() + ", depth: " + depth + ", f: " + f + ".";
 		}else{
-			aux += "\n\t Parent: " + null + ", CurrentState: " + currentState.toString() + ", depth: " + depth + ", f: " + f + ".";
+			aux += "\n\t parent: " + null + ",\n\t State: " + currentState.getNodo() + ",\n\t depth: " + depth + ",\n\t Subgoal: " + currentState.getNodeList().toString()+ "\n\t f: " + f;
+			//aux += "\n\t Parent: " + null + ", CurrentState: " + currentState.toString() + ", depth: " + depth + ", f: " + f + ".";
 		}
 		
 		return aux;
 		
-	}
-	
-	public String md5() throws NoSuchAlgorithmException{
-		String aux="";
-		
-		aux += currentState.toString();
-		aux += f;
-		aux += depth;			
-		
-		MessageDigest md = MessageDigest.getInstance("MD5");
-		md.update(aux.getBytes());
-		byte[] digest = md.digest();
-		aux = DatatypeConverter.printHexBinary(digest).toUpperCase();
-		return aux;
 	}
 	
 }

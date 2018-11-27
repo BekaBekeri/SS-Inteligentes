@@ -20,11 +20,11 @@ public class State {
 	public State(Nodo nodo, ArrayList<Nodo> nodeList) throws NoSuchAlgorithmException{
 		this.node = nodo;
 		this.listNodes = nodeList;
-		this.id = md5();
+		//this.id = md5();
 	}
 	
 	
-	public String md5() throws NoSuchAlgorithmException{
+	/*public String md5() throws NoSuchAlgorithmException{
 		
 		ArrayList<Nodo> myNodeList = listNodes;
 		String aux="";
@@ -40,7 +40,7 @@ public class State {
 		byte[] digest = md.digest();
 		aux = DatatypeConverter.printHexBinary(digest).toUpperCase();
 		return aux;
-	}
+	}*/
 
 
 	public Nodo getNodo() {
@@ -63,11 +63,11 @@ public class State {
 	}
 	
 	public void setMD5() throws NoSuchAlgorithmException{
-		id = md5();
+		//id = md5();
 	}
 	
 	public String getMd5(){
-		return id;
+		return "";
 	}
 	
 	public String toString(){
