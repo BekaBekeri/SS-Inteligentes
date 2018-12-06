@@ -1,10 +1,7 @@
 package Domain;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import javax.xml.bind.DatatypeConverter;
+public class TreeNode {
 
-public class TreeNode implements Comparable<TreeNode> {
 	
 	private TreeNode parent;
 	private State currentState;
@@ -12,6 +9,7 @@ public class TreeNode implements Comparable<TreeNode> {
 	private double f;
 	private double cost;
 	private double heuristic;
+	
 	
 	public TreeNode(TreeNode parent, State currentState, int depth, String strategy, double cost) {
 		this.parent = parent;
@@ -54,31 +52,11 @@ public class TreeNode implements Comparable<TreeNode> {
 }
 	}
 
-	//lnglat = [longitud=ejeX, latitud=ejey];
-	public double setDistance(Nodo tn1, Nodo tn2) {
-		double[] lnglat1 = {Double.valueOf(tn1.getXAxis()), Double.valueOf(tn1.getYAxis())};
-		double[] lnglat2 = {Double.valueOf(tn2.getXAxis()), Double.valueOf(tn2.getYAxis())};
-		double earthR = 6371009;
-		
-		
-		double phi1 = Math.toRadians(lnglat1[1]);
-		double phi2 = Math.toRadians(lnglat2[1]);
-		double diffPhi = phi2 - phi1;
-		
-		double theta1 = Math.toRadians(lnglat1[0]);
-		double theta2 = Math.toRadians(lnglat2[0]);
-		double diffTheta = theta2 - theta1;
-		
-		double h = Math.pow(Math.sin(diffPhi/2), 2) + Math.pow(Math.sin(Math.cos(phi1) * Math.cos(phi2) * diffTheta/2), 2);
-		double arc = 2 * Math.asin(Math.sqrt(h));
-		
-		return arc * earthR;
-	}
+	
 
 	public TreeNode() {
 	
 	}
-
 
 	public double getF() {
 		return f;
@@ -100,18 +78,9 @@ public class TreeNode implements Comparable<TreeNode> {
 		this.heuristic = heuristic;
 	}
 
-	public int compareTo(TreeNode tn) {
-		int r = 0;
-		
-		if(tn.getF() > this.f){
-			r = -1;
-		}
-		else if(tn.getF() < this.f){
-			r = +1;
-		}
-		
-		return r;
-	}
+	//public int compareTo(TreeNode tn) {
+	
+	//}
 
 	public TreeNode getParent() {
 		return parent;
@@ -144,15 +113,14 @@ public class TreeNode implements Comparable<TreeNode> {
 	public String toString(){
 		String aux = "";
 		if(parent != null){
-			aux += "\n\t parent: " + parent.getCurrentState().getNodo().getId() + ",\n\t State: " + currentState.getNodo() + ",\n\t depth: " + depth + ",\n\t Subgoal: " + currentState.getNodeList().toString() + "\n\t f: " + f;
-			//aux += "\n\t Parent: " + parent.getCurrentState().getNodo().getId() + ", CurrentState: " + currentState.toString() + ", depth: " + depth + ", f: " + f + ".";
+		
 		}else{
-			aux += "\n\t parent: " + null + ",\n\t State: " + currentState.getNodo() + ",\n\t depth: " + depth + ",\n\t Subgoal: " + currentState.getNodeList().toString()+ "\n\t f: " + f;
-			//aux += "\n\t Parent: " + null + ", CurrentState: " + currentState.toString() + ", depth: " + depth + ", f: " + f + ".";
+		
 		}
 		
 		return aux;
 		
 	}
+	
 	
 }

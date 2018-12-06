@@ -1,17 +1,17 @@
 package Domain;
 
-public class Nodo {
+public class OSMNode {
 	
 	private String id;
 	private String yAxis;		// D4 = Y axis
 	private String xAxis;		// D5 = X axis
 	private String osmid;
 	
-	public Nodo(){
+	public OSMNode(){
 		
 	}
 	
-	public Nodo(String id, String d4, String d5, String d6) {
+	public OSMNode(String id, String d4, String d5, String d6) {
 		super();
 		this.id = id;
 		this.yAxis = d4;

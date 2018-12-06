@@ -1,198 +1,147 @@
 package Domain;
 
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.LinkedList;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.SortedSet;
-import java.util.Stack;
-import java.util.TreeSet;
-
+import java.util.*;
+import Domain.TreeNode;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
-import javafx.animation.ScaleTransition;
+import java.io.*;
 
 public class Control {
-	
+
 	private static boolean solution;
 	private static Graph grafo;
 	private static Hashtable<String, Double> visited;		//<MD5, F>
 	private static PriorityQueue<TreeNode> frontier;
-
-	public static void ejecucionPrincipal(Problem problema, boolean prunning, String strategy, int depth) throws ParserConfigurationException, SAXException, IOException, NoSuchAlgorithmException {
+	private static OSMNode finalNode;
+	
+	public static void ejecucionPrincipal(Problem problema, boolean prunning, String strategy, int maxDepth) throws ParserConfigurationException, SAXException, IOException{
 		
-		//INICIALIZACION DE VARIABLES GLOBALES
-		grafo = new Graph(problema.getGraphlmfile());
 		solution = false;
 		visited = new Hashtable<String, Double>();
 		frontier = new PriorityQueue<TreeNode>();
+		grafo = new Graph(problema.getGraphlmfile());
+		
 		TreeNode tnInicial = obtenerTreeNode(problema, strategy);
 		
-		System.out.println("Empezando la ejcucion con el siguiente estado:" + 
-						   "\n\t Node id: " + tnInicial.getCurrentState().getNodo().getId() + 
-						   "\n\t List of goals: " + tnInicial.getCurrentState().getNodeList().toString() + 
-						   "\n\t [Prunning = " + prunning+ ", maxDepth = " + depth + ", Strategy = " + strategy + "]");	
-		
-		search(tnInicial, prunning, depth, strategy);
+		System.out.println("[MACHINE]-Starting execution with the folowwing data: " +
+		 				   "\n\t\t Node id: " + tnInicial.getCurrentState().getNodo().getId() + 
+		 				   "\n\t\t List of goals: " + tnInicial.getCurrentState().getNodeList().toString() + 
+		 				   "\n\t\t [Prunning = " + prunning+ ", maxDepth = " + maxDepth + ", Strategy = " + strategy + "]");	
 		
 		
-	}
-	
-	
-	private static void search(TreeNode tnInicial, boolean prunning, int depth, String strategy) throws NoSuchAlgorithmException {
-
-		solution = false;
-		int currentDepth = 0;
 		
-			
-		if(strategy.equalsIgnoreCase("IDS")){
-			do{
-				currentDepth++;
-				visited.clear();
-				frontier.clear();
-				frontier.add(tnInicial);
-				realSearch(currentDepth, prunning, strategy);	
-			}while(currentDepth <= depth);	
-		}else{
-			visited.clear();
-			frontier.clear();
-			frontier.add(tnInicial);
-			realSearch(depth, prunning, strategy);
-		}
-		
-		if(frontier.isEmpty()){
-			System.out.println("[NO SOLUTION FOUND]");
-		}else{
-			if(isGoal(frontier.peek().getCurrentState())){
-				System.out.println("[SOLUTION FOUND]");
-				
-				solution = true;
-				System.out.println(createSolution(frontier.peek()));
-			}
-		}
-		
+		search(tnInicial, strategy, maxDepth, 1);
+		boundedSearch(tnInicial, strategy, maxDepth);
 		
 		
 	}
 
-	private static void realSearch(int depth, boolean prunning, String strategy) throws NoSuchAlgorithmException {
-		while(!frontier.isEmpty() && !isGoal(frontier.peek().getCurrentState()) && frontier.peek().getDepth() < depth){
-			System.out.println("Expandiendo nodo: " + frontier.peek().toString());
-			visited.put(md5(frontier.peek()), Math.abs(frontier.peek().getF()));
-			generateSuccessors(frontier.poll(), prunning, strategy);
-		}
+	private static void search(TreeNode tnInicial, String strategy, int maxDepth, int i) {
 
-	}
-
-
-	private static String createSolution(TreeNode peek) {
-		
-		int aux = 0;
-		String exit = "";
-		Stack<TreeNode> solution = new Stack<TreeNode>();
-		TreeNode fooNode = new TreeNode();
-		TreeNode father = new TreeNode();
-		fooNode = peek;
-		
-		do{	
-			father = fooNode.getParent();
-			solution.push(fooNode);
-			fooNode = father;	
-		}while(fooNode.getParent() != null);
-		
-		while(!solution.isEmpty()){
-			
-			fooNode = solution.pop();
-			exit += "Step Nº" + ++aux + " \n\tnode id: " + fooNode.getCurrentState().getNodo().getId() + "\n\tGoal List :" + fooNode.getCurrentState().getNodeList().toString() + "\n";
-		
-		}
-		
-		
-		return exit;
-	}
-
-
-	// AUXILIAR METHODS
-
-	private static void generateSuccessors(TreeNode tn, boolean prunning, String strategy) throws NoSuchAlgorithmException {
-		
-		TreeNode original = tn;
-		State fooState = new State();
-		TreeNode fooTN = new TreeNode();
-		ArrayList<TreeNode> adyacentes = new ArrayList<TreeNode>();
-		adyacentes = grafo.adjacentNode(tn, strategy);							//aqui obtengo los hijos de treenode actual pero con el state sin modificar
-
-		
-		for(int i = 0; i < adyacentes.size(); i++){
-
-			
-
-			fooState.setNodo(adyacentes.get(i).getCurrentState().getNodo());															// el estado del hijo es igual a no se que se de
-			fooState.setNodeList(tn.getCurrentState().getNodeList());
-			if(fooState.getNodeList().contains(adyacentes.get(i).getCurrentState().getNodo())){						// el caso de que uno de los adyacentes sea uno de los subgoals
-				fooState.getNodeList().remove(adyacentes.get(i).getCurrentState().getNodo());						// se elimina de la lista de nodos del estado hijo
-				fooState.setMD5();																					// y se vuelve a calcular el md5
-			}											
-			
-			
-			fooTN = new TreeNode(tn, fooState, tn.getDepth() + 1, strategy, tn.setDistance(fooState.getNodo(), tn.getCurrentState().getNodo()));
-			
-			if(tn.getParent() != null){
-				System.out.println(visited.size());
-				//System.out.println(fooTN.getCurrentState().getNodo().getId() + " " + tn.getParent().getCurrentState().getNodo().getId());
-				if(!fooTN.getCurrentState().getNodo().getId().equalsIgnoreCase(tn.getParent().getCurrentState().getNodo().getId())){
-					if (prunning){
-						if(checkVisited(fooTN)){
-							frontier.add(fooTN);
-						}
-					}else{
-						frontier.add(fooTN);
-					}
-				}	
-			}else{
-				if (prunning){
-					if(checkVisited(fooTN)){
-						frontier.add(fooTN);
-					}
-				}else{
-					frontier.add(fooTN);
-				}
-			}
-			
-		}
-	}
- 
-	private static boolean checkVisited(TreeNode fooTN) throws NoSuchAlgorithmException {
-		
-		if(visited.get(md5(fooTN)) != null){
-			if(fooTN.getF() < visited.get(md5(fooTN))){
-				visited.put(md5(fooTN), fooTN.getF());
-				return true;
-			}else{
-				return false;
-			}
-		}else{
-			return true;
-		}
-	}
-
-	private static boolean isGoal(State currentState) {
-		if (currentState.getNodeList().isEmpty()){
-			return true;
-		}else{
-			return false;
+		int currentDepth = i;
+		while(!solution && currentDepth <= maxDepth){
+			boundedSearch(tnInicial, strategy, currentDepth);
+			currentDepth = currentDepth + i;
 		}	
 	}
 
-	private static TreeNode obtenerTreeNode(Problem problema, String strategy) throws NoSuchAlgorithmException {
+	private static void boundedSearch(TreeNode tnInicial, String strategy, int depth) {
+		
+		PriorityQueue<State> succList = new PriorityQueue<State>();
+		PriorityQueue<TreeNode> tnSuccList = new PriorityQueue<TreeNode>();
+		TreeNode tnActual = new TreeNode();
+		
+		while(!solution && !frontier.isEmpty()){
+			
+			tnActual = frontier.poll();
+			
+			if(isGoal(tnActual)){
+				solution = true;
+			}else{
+				succList = generateSuccessors(tnActual.getCurrentState());
+				tnSuccList = generateTNList(succList, tnActual, depth, strategy);
+				frontier.addAll(tnSuccList);
+			}	
+		}
+		
+		if(solution){
+			makeSolution();
+		}
+	}
+
+	private static void makeSolution() {
+		
+
+		
+	}
+
+	private static PriorityQueue<TreeNode> generateTNList(PriorityQueue<State> succList, TreeNode tnActual, int depth, String strategy) {
+		
+		PriorityQueue<TreeNode> successors = new PriorityQueue<TreeNode>();
+		
+		for(int i = 0; i < succList.size(); i++){
+			
+			double cost = calculateDistance(successors.peek().getCurrentState().getNodo(), tnActual.getCurrentState().getNodo());
+			TreeNode child = new TreeNode(tnActual, succList.poll(), depth, strategy, cost);
+			successors.add(child);
+		}
+		
+		return successors;
+	}
+
+	private static PriorityQueue<State> generateSuccessors(State currentState) {
+		
+		PriorityQueue<State> successors = new PriorityQueue<State>();
+		PriorityQueue<OSMNode> adjacents = grafo.obtainAdjacents(currentState.getNodo());
+		ArrayList<OSMNode> goals = currentState.getNodeList();
+		
+		for(int i = 0; i < adjacents.size(); i++){
+			State childState = new State();
+			childState.setNodo(adjacents.poll());
+			if(goals.contains(childState.getNodo())){
+				goals.remove(childState.getNodo());
+			}
+			childState.setNodeList(goals);	
+			successors.add(childState);
+		}
+		
+		return successors;
+	}
+
+	private static boolean isGoal(TreeNode tnActual) {
+		if(tnActual.getCurrentState().getNodeList().isEmpty()){
+			return true;
+		}
+		return false;
+	}
+
+	//lnglat = [longitud=ejeX, latitud=ejey];
+	public static double calculateDistance(OSMNode tn1, OSMNode tn2) {
+		double[] lnglat1 = {Double.valueOf(tn1.getXAxis()), Double.valueOf(tn1.getYAxis())};
+		double[] lnglat2 = {Double.valueOf(tn2.getXAxis()), Double.valueOf(tn2.getYAxis())};
+		double earthR = 6371009;
+			
+			
+		double phi1 = Math.toRadians(lnglat1[1]);
+		double phi2 = Math.toRadians(lnglat2[1]);
+		double diffPhi = phi2 - phi1;
+			
+		double theta1 = Math.toRadians(lnglat1[0]);
+		double theta2 = Math.toRadians(lnglat2[0]);
+		double diffTheta = theta2 - theta1;
+			
+		double h = Math.pow(Math.sin(diffPhi/2), 2) + Math.pow(Math.sin(Math.cos(phi1) * Math.cos(phi2) * diffTheta/2), 2);
+		double arc = 2 * Math.asin(Math.sqrt(h));
+		
+		return arc * earthR;
+	}
+	
+	private static TreeNode obtenerTreeNode(Problem problema, String strategy) {
 		TreeNode inicial = new TreeNode();
 		State estado1 = new State();
-		ArrayList<Nodo> lista = new ArrayList<Nodo>();
+		ArrayList<OSMNode> lista = new ArrayList<OSMNode>();
 		
 		estado1.setNodo(grafo.getNodeList().get(problema.getIntSt().getNode()));
 		
@@ -203,74 +152,8 @@ public class Control {
 		estado1 = new State(grafo.getNodeList().get(problema.getIntSt().getNode()), lista);
 		inicial = new TreeNode(null, estado1, 0, strategy, 0);
 		
+		finalNode = inicial.getCurrentState().getNodeList().get(inicial.getCurrentState().getNodeList().size()-1);
+		
 		return inicial;
 	}
-
-	public static String md5(TreeNode tn) throws NoSuchAlgorithmException{
-		
-		String aux="";
-		aux += tn.getCurrentState().getNodo().getId();
-		//aux += tn.getF();
-		//aux += tn.getDepth();			
-
-		return aux;
-	}
-	
-	// TESTING METHODS
-	
-	public static void Testing(){
-		TreeNode tn;
-		long t_ini, t_fin;
-		
-		LinkedList<TreeNode> lList;
-		SortedSet<TreeNode> sSet;
-		PriorityQueue<TreeNode> pQueue = null;
-		
-		Integer[] LinkedTest = {100, 1000, 10000, 100000, 200000, 500000, 1000000, 2000000, 5000000, 10000000};
-		Integer[] SortedTest = {100, 1000, 10000, 100000, 200000, 500000, 1000000, 2000000, 5000000, 10000000};
-		Integer[] PriorityTest = {100, 1000, 10000, 100000, 200000, 500000, 1000000, 2000000, 5000000, 10000000};
-		
-		//Collection con comparable
-		for(int i = 0; i<LinkedTest.length; i++) {
-			t_ini = System.currentTimeMillis();
-			lList = new LinkedList<TreeNode>();
-			for(int j = 0; j<LinkedTest[i] ; j++) {
-				//tn = new TreeNode();
-				//lList.add(tn);
-			}
-			t_fin = System.currentTimeMillis();
-			System.out.println("Time LinkedList " + LinkedTest[i] + " nodes: " + (t_fin-t_ini) + " ms");
-		}
-		
-		System.out.println();
-
-		for(int i = 0; i<SortedTest.length; i++) {
-			t_ini = System.currentTimeMillis();
-			sSet = new TreeSet<TreeNode>();
-			for(int j = 0; j<SortedTest[i]; j++) {
-				//tn = new TreeNode();
-				//sSet.add(tn);
-			}
-			t_fin = System.currentTimeMillis();
-			System.out.println("Time SortedSet " + PriorityTest[i] + " nodes: " + (t_fin-t_ini) + " ms");
-		}
-		
-		System.out.println();
-		
-		for(int i = 0; i<PriorityTest.length; i++) {
-			t_ini = System.currentTimeMillis();
-			pQueue = new PriorityQueue<TreeNode>();
-			for(int j = 0; j<PriorityTest[i]; j++) {
-				//tn = new TreeNode();
-				//pQueue.add(tn);
-			}
-			t_fin = System.currentTimeMillis();
-			System.out.println("Time PriorityQueue " + PriorityTest[i] + " nodes: " + (t_fin-t_ini) + " ms");
-		}
-		
-		for(int i = 0; i < 100; i++){
-			System.out.println("PriorityQ Node Nº: " + (i+1) + " with f: " + pQueue.poll().getF());	
-		}
-	}
-	
 }

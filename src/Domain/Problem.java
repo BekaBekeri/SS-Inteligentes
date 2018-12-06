@@ -30,3 +30,4 @@ public class Problem {
 		return "Fichero: " + graphlmfile + "\n" + IntSt.toString();
 	}
 }
+

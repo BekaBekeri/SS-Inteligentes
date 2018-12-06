@@ -1,12 +1,7 @@
 package Presentation;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
-import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
+import java.io.*;
+import java.util.*;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -17,27 +12,29 @@ import com.google.gson.Gson;
 import Domain.Control;
 import Domain.Problem;
 
-public class Presentation {					//JSON READER
+public class IO {
+
+	static Scanner sc= new Scanner(System.in);
 	
-	
-	static Scanner sc = new Scanner(System.in);
-	
-	public static void main(String[] args) throws UnsupportedEncodingException, IOException, InterruptedException, ParserConfigurationException, SAXException, NoSuchAlgorithmException{
+	public static void main(String[] args) throws InterruptedException, ParserConfigurationException, SAXException, IOException{
 		
-		Problem problem;
 		boolean prunning = false;
-		String search = "";
+		Problem problem;
+		String strategy = "";
 		int depth = -1;
 		
+		System.out.println("[MACHINE]-WELCOME TO THE FINAL VERSION OF THE INTELLIGENT SYSTEMS LABORATORY PROJECT");
+		System.out.println("[MACHINE]-NOW THE INITIAL DATA WILL BE ASKED TO THE USER\n");
+		
 		problem = readJson();
+		strategy = askStrategy();
 		prunning = askPrunning();
-		search = askSearchAlgorithm();
 		depth = askDepth();
-
 		
-		Control.ejecucionPrincipal(problem, prunning, search, depth);
+		Control.ejecucionPrincipal(problem, prunning, strategy, depth);
+		
 	}
-		
+
 	private static int askDepth() {
 		int depth=-1;
 		int depth_HC = 999;
@@ -46,7 +43,7 @@ public class Presentation {					//JSON READER
 		do{
 			System.out.println("Would you like to choose a specific depth for the search algorithm?\n" + 
 						   	   "1.- Yes.\n" + 
-						       "2.- No.\n");
+						       "2.- No.");
 			choose = sc.nextInt();
 		}while(choose < 1 || choose > 2);
 		
@@ -66,8 +63,23 @@ public class Presentation {					//JSON READER
 		
 		return depth;
 	}
-
-	private static String askSearchAlgorithm() throws InterruptedException {
+	
+	private static boolean askPrunning() {
+		boolean aux = false;
+		int option = 0;
+		do {
+			
+			System.out.println("Would you like to apply prunning in this search?\n" + 
+					   "1.-Yes\n" + 
+					   "2.-No");
+			option = sc.nextInt();
+			if(option == 1) aux = true;
+			else if(option == 2) aux = false;
+		}while(option<1 || option>2);
+		return aux;
+	}
+	
+	private static String askStrategy() throws InterruptedException {
 		String strategy=null;
 		int option= -1;
 		
@@ -109,22 +121,7 @@ public class Presentation {					//JSON READER
 		return strategy;
 	}
 
-	private static boolean askPrunning() {
-	boolean aux = false;
-	int option = 0;
-	do {
-		
-		System.out.println("Would you like to apply prunning in this search?\n" + 
-				   "1.-Yes\n" + 
-				   "2.-No\n");
-		option = sc.nextInt();
-		if(option == 1) aux = true;
-		else if(option == 2) aux = false;
-	}while(option<1 || option>2);
-	return aux;
-}
-
-	public static Problem readJson() throws UnsupportedEncodingException, IOException {
+	private static Problem readJson() {
 		Problem init = new Problem();
 		Gson gson =  new Gson();
 			
@@ -136,14 +133,12 @@ public class Presentation {					//JSON READER
 		}
 		
 		return init;
-
 	}
 	
-	 public static int integerController() throws InterruptedException{
+	public static int integerController() throws InterruptedException{
 		 
 		 while(!sc.hasNextInt()){
 	        System.err.println("The options can only be integers.");
-	        TimeUnit.SECONDS.sleep(1);
 	        System.out.println("Try again:");
 	        sc.next();
 	     }
@@ -151,3 +146,4 @@ public class Presentation {					//JSON READER
 	     return n;
 	 }
 }
+	

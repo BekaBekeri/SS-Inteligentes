@@ -1,13 +1,12 @@
 package Domain;
 
-public class Edge {
-	
+public class OSMEdge {
 	private String source;
 	private String target;
 	private String length;
 	private String name;
 	
-	public Edge(String source, String target, String length, String name) {
+	public OSMEdge(String source, String target, String length, String name) {
 		this.source = source;
 		this.target = target;
 		this.length = length;

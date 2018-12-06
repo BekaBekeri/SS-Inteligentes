@@ -1,28 +1,19 @@
 package Domain;
 
-import java.io.File;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.*;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.w3c.dom.*;
 import org.xml.sax.SAXException;
+
 
 public class Graph {
 	
 	private String XMLFile;
-	private Hashtable<String, Nodo> NodeList = new Hashtable<String, Nodo>();
-	private ArrayList<Edge> EdgeList = new ArrayList<Edge>();
+	private Hashtable<String, OSMNode> NodeList = new Hashtable<String, OSMNode>();
+	private ArrayList<OSMEdge> EdgeList = new ArrayList<OSMEdge>();
 	private String NAME_KEY = "";
 	private String LEN_KEY = "";
 	
@@ -33,11 +24,11 @@ public class Graph {
 		ReadXML();
 	}
 	
-	public ArrayList<Edge> getEdgeList(){
+	public ArrayList<OSMEdge> getEdgeList(){
 		return EdgeList;
 	}
 	
-	public Hashtable<String, Nodo> getNodeList(){
+	public Hashtable<String, OSMNode> getNodeList(){
 		return NodeList;
 	}
 	
@@ -53,7 +44,7 @@ public class Graph {
 		
      	//Nodos	
 		NodeList nList = doc.getElementsByTagName("node");
-		Nodo node;
+		OSMNode node;
 		String nodeID;
 		String d4, d5, d6;
 		String source, target, length = "", name = "";
@@ -66,7 +57,7 @@ public class Graph {
 				d4 = eElement.getElementsByTagName("data").item(0).getTextContent();	//Y AXIS
 				d5 = eElement.getElementsByTagName("data").item(1).getTextContent();	//X AXIS
 				d6 = eElement.getElementsByTagName("data").item(2).getTextContent();	
-				node = new Nodo(nodeID, d4, d5, d6);
+				node = new OSMNode(nodeID, d4, d5, d6);
 				NodeList.put(nodeID, node);		
 			}
 		}
@@ -74,7 +65,7 @@ public class Graph {
 		//Edges
 	    nList = doc.getElementsByTagName("edge");
 	    NodeList dList;
-		Edge edge;	
+		OSMEdge edge;	
 		NodeList kList;
 		kList = doc.getElementsByTagName("key");
 		
@@ -108,7 +99,7 @@ public class Graph {
 				if(dElement.getAttribute("key").equals(NAME_KEY)) name = dElement.getTextContent();
 				if(dElement.getAttribute("key").equals(LEN_KEY)) length = dElement.getTextContent();
 			}
-			edge = new Edge(source, target, length, name);
+			edge = new OSMEdge(source, target, length, name);
 			EdgeList.add(edge);
 		}
 	}
@@ -140,50 +131,17 @@ public class Graph {
 		}
 	}
 
-	//Modificar este metodo para que devuelva una lista de nodos (TreeNode) adyacentes al TreeNode que se pase como argumento. 
-	//Para ello primero hace falta obteener los edges que tiene el nodo 
-	public ArrayList<TreeNode> adjacentNode(TreeNode id, String strategy) throws NoSuchAlgorithmException{
+	public PriorityQueue<OSMNode> obtainAdjacents(OSMNode nodo) {
 		
-		ArrayList<String> strAdjacent = new ArrayList<String>();
-		ArrayList<TreeNode> adjacentList = new ArrayList<TreeNode>();
-		ArrayList<Nodo> adjacentNList = new ArrayList<Nodo>();
-			
+		PriorityQueue<OSMNode> adjacents = new PriorityQueue<OSMNode>();
+		
 		for(int i = 0; i < EdgeList.size(); i++){
-			if(EdgeList.get(i).getSource().equals(id.getCurrentState().getNodo().getId())){
-				strAdjacent.add(EdgeList.get(i).getTarget());
+			if(EdgeList.get(i).getSource().equalsIgnoreCase(nodo.getId())){
+				adjacents.add(NodeList.get(EdgeList.get(i).getTarget()));
 			}
 		}
-			
-		for(int i = 0; i < strAdjacent.size(); i++){
-			Iterator it = NodeList.entrySet().iterator();
-			while(it.hasNext()){
-				Map.Entry pair = (Map.Entry)it.next();
-				if(strAdjacent.get(i).equals(pair.getKey())){
-					adjacentNList.add(NodeList.get(strAdjacent.get(i)));
-				}
-			}
-		}
-		
-		TreeNode tnHijo = new TreeNode();
-		State fooState = new State();
-		//System.out.println("adyacentes: "+ adjacentNList.toString());
-		for(int i = 0; i < adjacentNList.size(); i++){
-			
-			fooState = new State(adjacentNList.get(i), id.getCurrentState().getNodeList());
-			tnHijo =  new TreeNode(id, fooState, id.getDepth() + 1, strategy, tnHijo.setDistance(id.getCurrentState().getNodo(), adjacentNList.get(i)));
-			if(id.getParent() != null){
-				//System.out.println(tnHijo.getCurrentState().getNodo().getId() + " " + id.getCurrentState().getNodo().getId());
-				if(!tnHijo.getCurrentState().getNodo().getId().equalsIgnoreCase(id.getCurrentState().getNodo().getId())){
-					adjacentList.add(tnHijo);
-				}
-			}else{
-				adjacentList.add(tnHijo);
-			}
-			
-		}
-		
-		return adjacentList;
+	
+		return null;
 	}
-	
-	
+
 }

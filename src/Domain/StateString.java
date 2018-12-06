@@ -1,9 +1,9 @@
 package Domain;
 
-import java.util.PriorityQueue;
+import java.util.*;
 
 public class StateString {
-	
+
 	private String node;
 	private PriorityQueue<String> listNodes;					//ordered list
 	private String id;
@@ -38,5 +38,6 @@ public class StateString {
 	}
 	
 																		
+	
 	
 }
