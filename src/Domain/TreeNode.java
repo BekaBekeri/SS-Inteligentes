@@ -27,7 +27,7 @@ public class TreeNode {
 	}
 
 	private void setHeuristic(State currentState2) {
-		double min = 99999999;
+	/*	double min = 99999999;
 		double aux = 0;
 		
 		for(int i = 0; i < currentState.getNodeList().size(); i++){
@@ -38,6 +38,7 @@ public class TreeNode {
 			}
 		}
 		this.heuristic = min;
+		*/
 	}
 
 	private void setStrategy(String strategy) {
