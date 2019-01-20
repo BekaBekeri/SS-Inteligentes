@@ -1,6 +1,8 @@
 package Domain;
 
-public class TreeNode {
+import java.util.ArrayList;
+
+public class TreeNode implements Comparable<TreeNode>{
 
 	
 	private TreeNode parent;
@@ -11,7 +13,7 @@ public class TreeNode {
 	private double heuristic;
 	
 	
-	public TreeNode(TreeNode parent, State currentState, int depth, String strategy, double cost) {
+	public TreeNode(TreeNode parent, State currentState, int depth, String strategy, double cost, int hc) {
 		this.parent = parent;
 		this.currentState = currentState;
 		if(parent != null){
@@ -21,24 +23,50 @@ public class TreeNode {
 			this.cost = cost;
 			this.depth = depth;
 		}
-		setHeuristic(currentState);
+		if( hc == 1 || hc == 2) setHeuristic(currentState, hc);
 		setStrategy(strategy);
 	
 	}
 
-	private void setHeuristic(State currentState2) {
-	/*	double min = 99999999;
-		double aux = 0;
+	private void setHeuristic(State currentState2, int hc) {
 		
+		double min = 99999999, min2 = 9999999;
+		double aux = 0, aux2 = 0;
+		ArrayList<Double> distances = new ArrayList<Double>();
+		
+	
 		for(int i = 0; i < currentState.getNodeList().size(); i++){
-			aux = setDistance(currentState.getNodo(), currentState.getNodeList().get(i));
+			aux = Control.calculateDistance(currentState.getNodo(), currentState.getNodeList().get(i));
 			if(aux < min){
 				min = aux;
 				aux = 0;
 			}
 		}
-		this.heuristic = min;
-		*/
+		
+		for(int i = 0; i < currentState.getNodeList().size() -1; i++){
+			
+			for(int j = i+1; j < currentState.getNodeList().size(); j++){
+				
+				aux2 = Control.calculateDistance(currentState.getNodeList().get(i), currentState.getNodeList().get(j));
+				if(aux2 < min2){
+					min2 = aux2;
+					aux2 = 0;
+				}
+			}
+			
+		}
+		
+		if(hc == 1){
+			
+			this.heuristic = min;
+		
+		}
+		else if(hc == 2){
+		
+			this.heuristic = min + min2;
+			
+		}
+		
 	}
 
 	private void setStrategy(String strategy) {
@@ -79,9 +107,19 @@ public class TreeNode {
 		this.heuristic = heuristic;
 	}
 
-	//public int compareTo(TreeNode tn) {
+	public int compareTo(TreeNode tn) {
+		int r = 0;
+		
+		if(tn.getF() > this.f){
+			r = -1;
+		}
+		else if(tn.getF() < this.f){
+			r = +1;
+		}
+		
+		return r;
 	
-	//}
+	}
 
 	public TreeNode getParent() {
 		return parent;

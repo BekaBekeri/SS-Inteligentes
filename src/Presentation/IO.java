@@ -22,6 +22,7 @@ public class IO {
 		Problem problem;
 		String strategy = "";
 		int depth = -1;
+		int hc = -1;
 		
 		System.out.println("[MACHINE]-WELCOME TO THE FINAL VERSION OF THE INTELLIGENT SYSTEMS LABORATORY PROJECT");
 		System.out.println("[MACHINE]-NOW THE INITIAL DATA WILL BE ASKED TO THE USER\n");
@@ -31,8 +32,29 @@ public class IO {
 		prunning = askPrunning();
 		depth = askDepth();
 		
-		Control.ejecucionPrincipal(problem, prunning, strategy, depth);
+		if (strategy.equals("A*")) hc = askHeuristic();
 		
+		Control.ejecucionPrincipal(problem, prunning, strategy, depth, hc);
+		
+	}
+	
+	private static int askHeuristic() {
+		int hc = -1;
+		
+		System.out.println("What kind of heuristic is gonna be used for the problem?\n" + 
+				"1.- H0.\n" + 
+				"2.- H1.");	
+		hc = sc.nextInt();
+		
+		while(hc < 1 || hc > 2){
+			
+			System.out.println("Choose a valid value for heuristic.\n" + 
+					"1.- H0.\n" + 
+					"2.- H1.");	
+			hc = sc.nextInt();
+		}
+		
+		return hc;
 	}
 
 	private static int askDepth() {

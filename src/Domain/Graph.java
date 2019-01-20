@@ -131,17 +131,17 @@ public class Graph {
 		}
 	}
 
-	public PriorityQueue<OSMNode> obtainAdjacents(OSMNode nodo) {
+	public ArrayList<OSMNode> obtainAdjacents(OSMNode nodo) {
 		
-		PriorityQueue<OSMNode> adjacents = new PriorityQueue<OSMNode>();
+		ArrayList<OSMNode> adjacents = new ArrayList<OSMNode>();
 		
 		for(int i = 0; i < EdgeList.size(); i++){
 			if(EdgeList.get(i).getSource().equalsIgnoreCase(nodo.getId())){
-				adjacents.add(NodeList.get(EdgeList.get(i).getTarget()));
+					adjacents.add(NodeList.get(EdgeList.get(i).getTarget()));
 			}
 		}
 	
-		return null;
+		return adjacents;
 	}
 
 }

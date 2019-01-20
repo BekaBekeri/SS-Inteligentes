@@ -12,18 +12,19 @@ public class Control {
 
 	private static boolean solution;
 	private static Graph grafo;
-	private static Hashtable<String, Double> visited;		//<MD5, F>
+	private static ArrayList<String> visited;		//<MD5, F>
 	private static PriorityQueue<TreeNode> frontier;
-	private static OSMNode finalNode;
+	private static int hc;
 	
-	public static void ejecucionPrincipal(Problem problema, boolean prunning, String strategy, int maxDepth) throws ParserConfigurationException, SAXException, IOException{
+	public static void ejecucionPrincipal(Problem problema, boolean prunning, String strategy, int maxDepth, int heu) throws ParserConfigurationException, SAXException, IOException{
 		
 		solution = false;
-		visited = new Hashtable<String, Double>();
+		visited = new ArrayList<String>();
 		frontier = new PriorityQueue<TreeNode>();
 		grafo = new Graph(problema.getGraphlmfile());
-		
+		hc = heu;
 		TreeNode tnInicial = obtenerTreeNode(problema, strategy);
+		frontier.add(tnInicial);
 		
 		System.out.println("[MACHINE]-Starting execution with the folowwing data: " +
 		 				   "\n\t\t Node id: " + tnInicial.getCurrentState().getNodo().getId() + 
@@ -33,8 +34,6 @@ public class Control {
 		
 		
 		search(tnInicial, strategy, maxDepth, 1);
-		boundedSearch(tnInicial, strategy, maxDepth);
-		
 		
 	}
 
@@ -49,14 +48,15 @@ public class Control {
 
 	private static void boundedSearch(TreeNode tnInicial, String strategy, int depth) {
 		
-		PriorityQueue<State> succList = new PriorityQueue<State>();
+		ArrayList<State> succList = new ArrayList<State>();
 		PriorityQueue<TreeNode> tnSuccList = new PriorityQueue<TreeNode>();
 		TreeNode tnActual = new TreeNode();
+		
 		
 		while(!solution && !frontier.isEmpty()){
 			
 			tnActual = frontier.poll();
-			
+			System.out.println("\tEjecutando tnActual " + tnActual.getCurrentState().getNodo().getId());
 			if(isGoal(tnActual)){
 				solution = true;
 			}else{
@@ -67,44 +67,64 @@ public class Control {
 		}
 		
 		if(solution){
-			makeSolution();
+			makeSolution(tnActual);
 		}
 	}
 
-	private static void makeSolution() {
+	private static void makeSolution(TreeNode tnSol) {
 		
-
+		Stack<TreeNode> solutionS = new Stack<TreeNode>();
+		TreeNode auxTn = tnSol;
+		
+		int paso = 1;
+		
+		do{
+			solutionS.push(auxTn);
+			auxTn = auxTn.getParent();
+		}while(auxTn.getParent() != null);
+		
+		
+		System.out.println("Starting from --> " + solutionS.pop().getCurrentState().getNodo().getId());
+		do{
+			System.out.println("Step Nº: " + paso + "\n\tGoing to --> " + solutionS.pop().getCurrentState().getNodo().getId());
+			paso++;
+		}while(!solutionS.isEmpty());
 		
 	}
 
-	private static PriorityQueue<TreeNode> generateTNList(PriorityQueue<State> succList, TreeNode tnActual, int depth, String strategy) {
+	private static PriorityQueue<TreeNode> generateTNList(ArrayList<State> succList, TreeNode tnActual, int depth, String strategy) {
 		
 		PriorityQueue<TreeNode> successors = new PriorityQueue<TreeNode>();
 		
 		for(int i = 0; i < succList.size(); i++){
+			//System.out.println("\t\t TnsuccAct " + succList.get(i).getNodo().getId());
 			
-			double cost = calculateDistance(successors.peek().getCurrentState().getNodo(), tnActual.getCurrentState().getNodo());
-			TreeNode child = new TreeNode(tnActual, succList.poll(), depth, strategy, cost);
+			double cost = Math.abs(calculateDistance(succList.get(i).getNodo(), tnActual.getCurrentState().getNodo()));
+			TreeNode child = new TreeNode(tnActual, succList.get(i), depth, strategy, cost, hc);
 			successors.add(child);
 		}
 		
 		return successors;
 	}
 
-	private static PriorityQueue<State> generateSuccessors(State currentState) {
+	private static ArrayList<State> generateSuccessors(State currentState) {
 		
-		PriorityQueue<State> successors = new PriorityQueue<State>();
-		PriorityQueue<OSMNode> adjacents = grafo.obtainAdjacents(currentState.getNodo());
+		ArrayList<State> successors = new ArrayList<State>();
+		visited.add(currentState.getNodo().getId());
+		ArrayList<OSMNode> adjacents = grafo.obtainAdjacents(currentState.getNodo());
 		ArrayList<OSMNode> goals = currentState.getNodeList();
 		
 		for(int i = 0; i < adjacents.size(); i++){
-			State childState = new State();
-			childState.setNodo(adjacents.poll());
-			if(goals.contains(childState.getNodo())){
-				goals.remove(childState.getNodo());
+			if(!visited.contains(adjacents.get(i).getId())){
+				State childState = new State();
+				childState.setNodo(adjacents.get(i));
+				if(goals.contains(childState.getNodo())){
+					goals.remove(childState.getNodo());
+					System.out.println("REMOVIENDO SUBGOAL " + childState.getNodo().getId());
+				}
+				childState.setNodeList(goals);	
+				successors.add(childState);
 			}
-			childState.setNodeList(goals);	
-			successors.add(childState);
 		}
 		
 		return successors;
@@ -117,7 +137,7 @@ public class Control {
 		return false;
 	}
 
-	//lnglat = [longitud=ejeX, latitud=ejey];
+	
 	public static double calculateDistance(OSMNode tn1, OSMNode tn2) {
 		double[] lnglat1 = {Double.valueOf(tn1.getXAxis()), Double.valueOf(tn1.getYAxis())};
 		double[] lnglat2 = {Double.valueOf(tn2.getXAxis()), Double.valueOf(tn2.getYAxis())};
@@ -150,9 +170,7 @@ public class Control {
 		}
 		
 		estado1 = new State(grafo.getNodeList().get(problema.getIntSt().getNode()), lista);
-		inicial = new TreeNode(null, estado1, 0, strategy, 0);
-		
-		finalNode = inicial.getCurrentState().getNodeList().get(inicial.getCurrentState().getNodeList().size()-1);
+		inicial = new TreeNode(null, estado1, 0, strategy, 0, hc);
 		
 		return inicial;
 	}
